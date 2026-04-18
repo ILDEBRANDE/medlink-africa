@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="my_jobs">My Jobs</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar" id="navbar"></nav>
+    <div class="container">
+        <h2 data-i18n="my_jobs">My Job Postings</h2>
+        <table class="data-table" id="allJobsTable">
+            <thead>
+                <tr><th data-i18n="title">Title</th><th data-i18n="specialty">Specialty</th><th data-i18n="location">Location</th><th data-i18n="salary_range">Salary Range</th><th data-i18n="status">Status</th><th data-i18n="actions">Actions</th></tr>
+            </thead>
+            <tbody id="allJobsList"></tbody>
+        </table>
+    </div>
+    <script src="/js/common.js"></script>
+    <script src="/js/hospital-jobs.js"></script>
+    <script>
+        (async () => {
+            await initUserPanel('hospital');
+        })();
+    </script>
+</body>
+</html>

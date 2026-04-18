@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="messages">Messages</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .chat-container {
+            display: flex;
+            height: 70vh;
+            margin-top: 20px;
+            border: 1px solid var(--border-color, #ddd);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .conversations {
+            width: 30%;
+            border-right: 1px solid var(--border-color, #ddd);
+            overflow-y: auto;
+            background: var(--card-bg, #f9f9f9);
+        }
+        .chat-area {
+            width: 70%;
+            display: flex;
+            flex-direction: column;
+            background: var(--card-bg, white);
+        }
+        .conversation-item {
+            padding: 15px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color, #eee);
+        }
+        .conversation-item:hover {
+            background: rgba(0,0,0,0.05);
+        }
+        .conversation-item.active {
+            background: var(--primary-color, #007bff);
+            color: white;
+        }
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .message {
+            padding: 8px 12px;
+            border-radius: 12px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+        .sent {
+            background: var(--primary-color, #007bff);
+            color: white;
+            align-self: flex-end;
+        }
+        .received {
+            background: #e9ecef;
+            color: #333;
+            align-self: flex-start;
+        }
+        body.dark .received {
+            background: #2c3e50;
+            color: #eee;
+        }
+        .message-input-area {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid var(--border-color, #ddd);
+            background: var(--card-bg, white);
+        }
+        .message-input-area input {
+            flex: 1;
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid var(--border-color, #ccc);
+            border-radius: 20px;
+            background: var(--input-bg, white);
+            color: var(--text-color, #333);
+        }
+        .message-input-area button {
+            padding: 10px 20px;
+            background: var(--primary-color, #007bff);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .message-input-area button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .chat-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color, #ddd);
+            background: var(--card-bg, #f8f9fa);
+            font-weight: bold;
+        }
+        .delete-msg {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+        }
+        @media (max-width: 768px) {
+            .chat-container {
+                flex-direction: column;
+                height: auto;
+            }
+            .conversations, .chat-area {
+                width: 100%;
+            }
+            .conversations {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color, #ddd);
+                max-height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar injected by common.js -->
+    <nav class="navbar" id="navbar"></nav>
+
+    <div class="container">
+        <h2 data-i18n="messages">Messages</h2>
+        <div class="chat-container">
+            <div class="conversations" id="conversationList">
+                <div class="loading">Loading conversations...</div>
+            </div>
+            <div class="chat-area">
+                <div class="chat-header" id="chatHeader">Select a conversation</div>
+                <div class="messages" id="messagesContainer">
+                    <div class="loading">No conversation selected</div>
+                </div>
+                <div class="message-input-area">
+                    <input type="text" id="messageInput" placeholder="Type a message..." disabled>
+                    <button id="sendBtn" disabled>Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/chat.js"></script>
+    <script>
+        // Initialize the page for the logged-in user (doctor, hospital, or admin)
+        (async () => {
+            const user = await checkAuth();
+            if (!user) {
+                window.location.href = '/login.html';
+                return;
+            }
+            injectNavbar(user.role);
+            await initI18n();   // load language from backend
+            await initTheme();   // load theme from backend
+           
+        })();
+    </script>
+</body>
+</html>

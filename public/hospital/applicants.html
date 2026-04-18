@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="applicants">Applicants</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar" id="navbar"></nav>
+    <div class="container">
+        <h2 data-i18n="applicants">Job Applicants</h2>
+        <table class="data-table" id="applicantsTable">
+            <thead>
+                <tr><th data-i18n="doctor_name">Doctor Name</th><th data-i18n="specialty">Specialty</th><th data-i18n="experience">Experience</th><th data-i18n="applied_for">Applied For</th><th data-i18n="status">Status</th><th data-i18n="actions">Actions</th></tr>
+            </thead>
+            <tbody id="applicantsList"></tbody>
+        </table>
+    </div>
+    <script src="/js/common.js"></script>
+    <script src="/js/hospital-applicants.js"></script>
+    <script>
+        (async () => {
+            await initUserPanel('hospital');
+        })();
+    </script>
+</body>
+</html>

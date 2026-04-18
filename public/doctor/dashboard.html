@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="doctor_dashboard">Doctor Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar" id="navbar"></nav>
+    <div class="dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <h2><span data-i18n="welcome">Welcome</span>, <span id="doctorName"></span></h2>
+                <p data-i18n="doctor_dashboard">Doctor Dashboard</p>
+                <div id="notificationPreview" style="margin-top:10px; padding:10px; background:#f0f0f0; border-radius:5px;"></div>
+                
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card"><h3 id="applicationsCount">0</h3><p data-i18n="applications_submitted">Applications Submitted</p></div>
+                <div class="stat-card"><h3 id="interviewsCount">0</h3><p data-i18n="interviews_scheduled">Interviews Scheduled</p></div>
+                <div class="stat-card"><h3 id="profileComplete">0%</h3><p data-i18n="profile_complete">Profile Complete</p></div>
+            </div>
+            <h3 data-i18n="recent_applications">Recent Applications</h3>
+            <table class="data-table" id="applicationsTable">
+                <thead>
+                    <tr><th data-i18n="job_title">Job Title</th><th data-i18n="hospital">Hospital</th><th data-i18n="applied_date">Applied Date</th><th data-i18n="status">Status</th><th data-i18n="rejection_reason">Rejection Reason</th><th data-i18n="interview">Interview</th></tr>
+                </thead>
+                <tbody id="applicationsList"></tbody>
+            </table>
+        </div>
+    </div>
+    <script src="/js/common.js"></script>
+    <script src="/js/doctor-dashboard.js"></script>
+    <script>
+        (async () => {
+            await initUserPanel('doctor');
+        })();
+    </script>
+</body>
+</html>

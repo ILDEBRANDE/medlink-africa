@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title data-i18n="statistics">Statistics</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar" id="navbar"></nav>
+    <div class="container">
+        <h2 data-i18n="statistics">Statistics</h2>
+        <div id="basicStats" class="stats-grid"></div>
+        <div id="matchingStats" class="stats-grid"></div>
+        <button id="reportBtn" data-i18n="download_report">Download Report</button>
+    </div>
+    <script src="/js/common.js"></script>
+    <script>
+        async function loadStats() {
+            const res = await fetch('/api/admin/stats', { credentials: 'include' });
+            const stats = await res.json();
+            document.getElementById('basicStats').innerHTML = `
+                <div class="stat-card"><h3>${stats.doctors}</h3><p data-i18n="doctors">Doctors</p></div>
+                <div class="stat-card"><h3>${stats.hospitals}</h3><p data-i18n="hospitals">Hospitals</p></div>
+                <div class="stat-card"><h3>${stats.jobs}</h3><p data-i18n="jobs">Jobs</p></div>
+                <div class="stat-card"><h3>${stats.applications}</h3><p data-i18n="applications">Applications</p></div>
+                <div class="stat-card"><h3>${stats.ruralJobs}</h3><p data-i18n="rural_jobs">Rural Jobs</p></div>
+                <div class="stat-card"><h3>${stats.urbanJobs}</h3><p data-i18n="urban_jobs">Urban Jobs</p></div>
+            `;
+            const matchRes = await fetch('/api/admin/matching-stats', { credentials: 'include' });
+            const match = await matchRes.json();
+            document.getElementById('matchingStats').innerHTML = `<div class="stat-card"><h3>${match.average_match_score}%</h3><p data-i18n="avg_match_score">Avg Match Score</p></div><div class="stat-card"><h3>${match.total_jobs}</h3><p data-i18n="total_jobs">Total Open Jobs</p></div><div class="stat-card"><h3>${match.total_doctors}</h3><p data-i18n="total_doctors">Total Doctors</p></div>`;
+            applyTranslations();
+        }
+        document.getElementById('reportBtn').addEventListener('click', async () => {
+            const stats = await (await fetch('/api/admin/stats', { credentials: 'include' })).json();
+            const match = await (await fetch('/api/admin/matching-stats', { credentials: 'include' })).json();
+            const blob = new Blob([JSON.stringify({ stats, match }, null, 2)], {type:'application/json'});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'medlink_report.json'; a.click(); URL.revokeObjectURL(blob);
+        });
+        (async () => { await initAdminPanel(); await loadStats(); })();
+    </script>
+</body>
+</html>

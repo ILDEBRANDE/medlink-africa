@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="admin_dashboard">Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar" id="navbar"></nav>
+    <div class="container">
+        <h2 data-i18n="admin_dashboard">Admin Dashboard</h2>
+        <div class="stats-grid" id="statsGrid"></div>
+        <div class="dashboard-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 data-i18n="recent_notifications">Recent Admin Notifications</h3>
+                <button id="clearNotifBtn" class="btn-danger" data-i18n="clear_all">🗑️ Clear All Notifications</button>
+            </div>
+            <div id="notifList"></div>
+        </div>
+    </div>
+    <script src="/js/common.js"></script>
+    <script>
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/admin/stats', { credentials: 'include' });
+                const stats = await res.json();
+                document.getElementById('statsGrid').innerHTML = `
+                    <div class="stat-card"><h3>${stats.doctors}</h3><p data-i18n="doctors">Doctors</p></div>
+                    <div class="stat-card"><h3>${stats.hospitals}</h3><p data-i18n="hospitals">Hospitals</p></div>
+                    <div class="stat-card"><h3>${stats.jobs}</h3><p data-i18n="jobs">Jobs</p></div>
+                    <div class="stat-card"><h3>${stats.applications}</h3><p data-i18n="applications">Applications</p></div>
+                    <div class="stat-card"><h3>${stats.ruralJobs}</h3><p data-i18n="rural_jobs">Rural Jobs</p></div>
+                    <div class="stat-card"><h3>${stats.urbanJobs}</h3><p data-i18n="urban_jobs">Urban Jobs</p></div>
+                `;
+                applyTranslations();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadAdminNotifs() {
+            try {
+                const res = await fetch('/api/admin/notifications', { credentials: 'include' });
+                const notifs = await res.json();
+                const container = document.getElementById('notifList');
+                container.innerHTML = '';
+                if (notifs.length === 0) {
+                    container.innerHTML = '<div class="alert alert-info" data-i18n="no_notifications">No notifications</div>';
+                    applyTranslations();
+                    return;
+                }
+                notifs.forEach(n => {
+                    const div = document.createElement('div');
+                    div.className = 'alert alert-info';
+                    div.innerHTML = `<strong>${escapeHtml(n.hospital_name)}</strong> - ${n.action_type}: ${n.details}<br><small>${new Date(n.created_at).toLocaleString()}</small>`;
+                    container.appendChild(div);
+                });
+            } catch (err) {
+                console.error(err);
+                document.getElementById('notifList').innerHTML = '<div class="alert alert-error">Error loading notifications.</div>';
+            }
+        }
+
+        async function clearAllNotifications() {
+            if (!confirm('Delete all admin notifications?')) return;
+            try {
+                const res = await fetch('/api/admin/notifications', { method: 'DELETE', credentials: 'include' });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('All notifications cleared');
+                    loadAdminNotifs();
+                } else {
+                    alert(data.error || 'Failed to clear');
+                }
+            } catch(e) {
+                console.error(e);
+                alert('Network error');
+            }
+        }
+
+        document.getElementById('clearNotifBtn').addEventListener('click', clearAllNotifications);
+
+        (async () => {
+            await initAdminPanel();
+            await loadStats();
+            await loadAdminNotifs();
+        })();
+    </script>
+</body>
+</html>

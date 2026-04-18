@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="search_doctors">Search Doctors</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .filters {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .filter-group { flex: 1; min-width: 150px; }
+        .filter-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .filter-group input, .filter-group select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        .btn-search { background: #3498db; color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; height: 38px; }
+        .btn-contact { background: #2ecc71; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <nav class="navbar" id="navbar"></nav>
+    <div class="dashboard">
+        <div class="container">
+            <h2 data-i18n="search_doctors">Search Doctors</h2>
+            <div class="filters">
+                <div class="filter-group"><label data-i18n="specialty">Specialty</label><input type="text" id="searchSpecialty" placeholder="e.g., Cardiology"></div>
+                <div class="filter-group"><label data-i18n="location_pref">Location Preference</label><select id="searchLocationPref"><option value="">Any</option><option value="urban">Urban</option><option value="rural">Rural</option></select></div>
+                <div class="filter-group"><label data-i18n="min_experience">Min Experience (years)</label><input type="number" id="searchMinExp" placeholder="e.g., 3"></div>
+                <button class="btn-search" id="searchBtn" data-i18n="search">Search</button>
+            </div>
+            <table class="data-table" id="doctorsTable">
+                <thead><tr><th data-i18n="name">Name</th><th data-i18n="specialty">Specialty</th><th data-i18n="experience">Experience</th><th data-i18n="location_pref">Location Pref</th><th data-i18n="phone">Phone</th><th data-i18n="action">Action</th></tr></thead>
+                <tbody id="doctorsList"></tbody>
+            </table>
+        </div>
+    </div>
+    <script src="/js/common.js"></script>
+    <script src="/js/hospital-search.js"></script>
+    <script>
+        (async () => {
+            await initUserPanel('hospital');
+        })();
+    </script>
+</body>
+</html>

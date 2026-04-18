@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matched Doctors - MedLink Africa</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar" id="navbar"></nav>
+    <div class="dashboard">
+        <div class="container">
+            <h2>Top Matched Doctors for this Job</h2>
+            <table class="data-table" id="matchesTable">
+                <thead>
+                    <tr>
+                        <th>Doctor Name</th>
+                        <th>Specialty</th>
+                        <th>Experience</th>
+                        <th>Location Preference</th>
+                        <th>Match Score</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="matchesList"></tbody>
+            </table>
+            <button onclick="window.history.back()">Back</button>
+        </div>
+    </div>
+    <script src="/js/common.js"></script>
+    <script>
+        async function loadMatchedDoctors() {
+            const user = await checkAuth();
+            if (!user || user.role !== 'hospital') {
+                window.location.href = '/login.html';
+                return;
+            }
+            injectNavbar('hospital');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const jobId = urlParams.get('jobId');
+            if (!jobId) {
+                document.getElementById('matchesList').innerHTML = '<tr><td colspan="6">No job selected.</td></tr>';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/matches/job/${jobId}/doctors`, { credentials: 'include' });
+                const data = await res.json();
+                const tbody = document.getElementById('matchesList');
+                tbody.innerHTML = '';
+                if (data.matched_doctors.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6">No matching doctors found.</td></tr>';
+                    return;
+                }
+                data.matched_doctors.forEach(doc => {
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td>${doc.full_name}</td>
+                        <td>${doc.specialty}</td>
+                        <td>${doc.experience_years} yrs</td>
+                        <td>${doc.location_pref}</td>
+                        <td>${doc.match_score}%</td>
+                        <td><button onclick="contactDoctor(${doc.user_id})">Message</button></td>
+                    `;
+                });
+            } catch(e) {
+                console.error(e);
+                document.getElementById('matchesList').innerHTML = '<tr><td colspan="6">Error loading matches.</td></tr>';
+            }
+        }
+
+        function contactDoctor(doctorUserId) {
+            window.location.href = `/messages.html?userId=${doctorUserId}`;
+        }
+
+        loadMatchedDoctors();
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title data-i18n="manage_jobs">Manage Jobs</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar" id="navbar"></nav>
+    <div class="container">
+        <h2 data-i18n="manage_jobs">Manage Jobs</h2>
+        <table class="data-table" id="jobsTable"><thead><tr><th data-i18n="title">Title</th><th data-i18n="hospital">Hospital</th><th data-i18n="specialty">Specialty</th><th data-i18n="location">Location</th><th data-i18n="status">Status</th><th data-i18n="action">Action</th></tr></thead><tbody id="jobsList"></tbody></table>
+    </div>
+    <script src="/js/common.js"></script>
+    <script>
+        async function loadJobs() {
+            const res = await fetch('/api/admin/jobs', { credentials: 'include' });
+            const jobs = await res.json();
+            const tbody = document.getElementById('jobsList');
+            tbody.innerHTML = '';
+            jobs.forEach(j => { tbody.insertRow().innerHTML = `<td>${escapeHtml(j.title)}</td><td>${escapeHtml(j.hospital_name)}</td><td>${escapeHtml(j.specialty_required)}</td><td>${j.location_type}</td><td>${j.status}</td><td><button class="delete-btn" onclick="deleteJob(${j.id})" data-i18n="delete">Delete</button></td>`; });
+            applyTranslations();
+        }
+        async function deleteJob(jobId) { if(confirm('Delete job?')){ await fetch(`/api/admin/job/${jobId}`,{method:'DELETE',credentials:'include'}); loadJobs(); } }
+        (async () => { await initAdminPanel(); await loadJobs(); })();
+    </script>
+</body>
+</html>

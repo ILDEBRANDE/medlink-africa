@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MedLink Africa</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .role-selector {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .role-btn {
+            padding: 12px 30px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            background: #f9f9f9;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .role-btn.selected {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        .role-btn.doctor.selected { background: #3498db; }
+        .role-btn.hospital.selected { background: #e74c3c; }
+        .role-btn.admin.selected { background: #2ecc71; border-color: #2ecc71; }
+        .login-form { display: none; max-width: 400px; margin: 0 auto; }
+        .login-form.active { display: block; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo"><h1>MedLink Africa</h1></div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/login.html">Login</a>
+                <a href="/register.html">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="form-container">
+        <h2>Login</h2>
+        <div class="role-selector">
+            <div class="role-btn doctor" data-role="doctor">👨‍⚕️ Doctor</div>
+            <div class="role-btn hospital" data-role="hospital">🏥 Hospital</div>
+            <div class="role-btn admin" data-role="admin">👑 Admin</div>
+        </div>
+
+        <!-- Doctor Login Form -->
+        <div id="doctorForm" class="login-form">
+            <form id="doctorLoginForm">
+                <div class="form-group"><label>Email</label><input type="email" id="doctorEmail" required placeholder="doctor@example.com"></div>
+                <div class="form-group"><label>Password</label><input type="password" id="doctorPassword" required placeholder="••••••••"></div>
+                <button type="submit">Login as Doctor</button>
+            </form>
+        </div>
+
+        <!-- Hospital Login Form -->
+        <div id="hospitalForm" class="login-form">
+            <form id="hospitalLoginForm">
+                <div class="form-group"><label>Email</label><input type="email" id="hospitalEmail" required placeholder="hospital@example.com"></div>
+                <div class="form-group"><label>Password</label><input type="password" id="hospitalPassword" required placeholder="••••••••"></div>
+                <button type="submit">Login as Hospital</button>
+            </form>
+        </div>
+
+        <!-- Admin Login Form -->
+        <div id="adminForm" class="login-form">
+            <form id="adminLoginForm">
+                <div class="form-group"><label>Email</label><input type="email" id="adminEmail" required placeholder="admin@medlink.com"></div>
+                <div class="form-group"><label>Password</label><input type="password" id="adminPassword" required placeholder="••••••••"></div>
+                <button type="submit">Login as Admin</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script>
+        const roleBtns = document.querySelectorAll('.role-btn');
+        const doctorForm = document.getElementById('doctorForm');
+        const hospitalForm = document.getElementById('hospitalForm');
+        const adminForm = document.getElementById('adminForm');
+
+        roleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                roleBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                const role = btn.getAttribute('data-role');
+                doctorForm.classList.remove('active');
+                hospitalForm.classList.remove('active');
+                adminForm.classList.remove('active');
+                if (role === 'doctor') doctorForm.classList.add('active');
+                else if (role === 'hospital') hospitalForm.classList.add('active');
+                else if (role === 'admin') adminForm.classList.add('active');
+            });
+        });
+        document.querySelector('.role-btn.doctor').click();
+
+        async function performLogin(email, password) {
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    if (data.requireChange) {
+                        window.location.href = '/admin/change-password.html';
+                    } else {
+                        redirectToDashboard(data.user.role);
+                    }
+                } else {
+                    alert(data.error || 'Login failed. Check your credentials.');
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
+        }
+
+        document.getElementById('doctorLoginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            performLogin(document.getElementById('doctorEmail').value, document.getElementById('doctorPassword').value);
+        });
+        document.getElementById('hospitalLoginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            performLogin(document.getElementById('hospitalEmail').value, document.getElementById('hospitalPassword').value);
+        });
+        document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            performLogin(document.getElementById('adminEmail').value, document.getElementById('adminPassword').value);
+        });
+    </script>
+</body>
+</html>

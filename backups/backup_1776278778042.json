@@ -1,0 +1,704 @@
+{
+  "users": [
+    {
+      "id": 2,
+      "email": "admin@medlink.com",
+      "password_hash": "$2b$12$WUWucFpd.sVg/Hp.olHsEuA/kRLHrb.tpzUmIQ/PgrzFDANE4PsTG",
+      "role": "admin",
+      "language": "en",
+      "created_at": "2026-04-13T21:59:39.000Z"
+    },
+    {
+      "id": 3,
+      "email": "ildebrandetwahujumutima@gmail.com",
+      "password_hash": "$2b$12$e/2TzdXSsUFzYoZCJIqOk.kUi9OtImxM7/RGwhlLpLaUeb0Usi.hW",
+      "role": "doctor",
+      "language": "rw",
+      "created_at": "2026-04-13T22:02:01.000Z"
+    },
+    {
+      "id": 4,
+      "email": "ilidebrandetwahujumutima@gmail.com",
+      "password_hash": "$2b$12$mtDI2baEOjq6ikorewjP.OXcRrQ6lNLQeJp.ysIBRyu1AAmdG18HS",
+      "role": "hospital",
+      "language": "en",
+      "created_at": "2026-04-13T22:04:58.000Z"
+    }
+  ],
+  "doctors": [
+    {
+      "id": 1,
+      "user_id": 3,
+      "full_name": "TWAHUJUMUTIMA Ildebrande",
+      "specialty": "General Practice",
+      "experience_years": 5,
+      "location_pref": "urban",
+      "salary_expectation": "5.00",
+      "cv_path": "uploads\\cvs\\cv-1776267035943-964854252.pdf",
+      "license_path": "uploads\\licenses\\license-1776123645622-41893336.docx",
+      "bio": null,
+      "phone": "0795494474",
+      "created_at": "2026-04-14T09:01:24.000Z",
+      "updated_at": "2026-04-15T15:30:36.000Z"
+    }
+  ],
+  "hospitals": [
+    {
+      "id": 1,
+      "user_id": 4,
+      "hospital_name": "byumba",
+      "location": "byumba",
+      "contact_phone": null,
+      "description": null,
+      "verification_status": "approved",
+      "suspended": 0,
+      "is_verified": 0,
+      "latitude": null,
+      "longitude": null,
+      "address": null,
+      "location_verified": 0
+    }
+  ],
+  "jobs": [
+    {
+      "id": 1,
+      "hospital_id": 1,
+      "title": "loboratory",
+      "description": "make pharmacy trust by user",
+      "specialty_required": "General Practice",
+      "location_type": "urban",
+      "salary_range": "65",
+      "posted_date": "2026-04-13T22:08:06.000Z",
+      "status": "open",
+      "is_verified": 1,
+      "admin_approved": 0
+    },
+    {
+      "id": 2,
+      "hospital_id": 1,
+      "title": "General Practitioner Needed",
+      "description": "We need a GP for our clinic in Kigali.",
+      "specialty_required": "General Practice",
+      "location_type": "urban",
+      "salary_range": "60k-80k",
+      "posted_date": "2026-04-13T22:26:50.000Z",
+      "status": "open",
+      "is_verified": 1,
+      "admin_approved": 0
+    },
+    {
+      "id": 3,
+      "hospital_id": 1,
+      "title": "pharmacy",
+      "description": "provide clar medecine to sick people",
+      "specialty_required": "General Practice",
+      "location_type": "urban",
+      "salary_range": "65",
+      "posted_date": "2026-04-13T23:37:28.000Z",
+      "status": "closed",
+      "is_verified": 1,
+      "admin_approved": 0
+    },
+    {
+      "id": 4,
+      "hospital_id": 1,
+      "title": "lob",
+      "description": "make lab excellet",
+      "specialty_required": "General Practice",
+      "location_type": "urban",
+      "salary_range": "70",
+      "posted_date": "2026-04-14T10:10:17.000Z",
+      "status": "open",
+      "is_verified": 1,
+      "admin_approved": 0
+    },
+    {
+      "id": 5,
+      "hospital_id": 1,
+      "title": "loboratory",
+      "description": "hardworking",
+      "specialty_required": "General Practice",
+      "location_type": "urban",
+      "salary_range": "70",
+      "posted_date": "2026-04-15T15:39:54.000Z",
+      "status": "open",
+      "is_verified": 1,
+      "admin_approved": 0
+    }
+  ],
+  "applications": [
+    {
+      "id": 1,
+      "job_id": 2,
+      "doctor_id": 1,
+      "status": "applied",
+      "applied_date": "2026-04-13T22:34:33.000Z",
+      "updated_at": "2026-04-13T22:34:33.000Z"
+    },
+    {
+      "id": 2,
+      "job_id": 1,
+      "doctor_id": 1,
+      "status": "applied",
+      "applied_date": "2026-04-13T23:01:46.000Z",
+      "updated_at": "2026-04-13T23:01:46.000Z"
+    },
+    {
+      "id": 3,
+      "job_id": 3,
+      "doctor_id": 1,
+      "status": "applied",
+      "applied_date": "2026-04-14T09:19:18.000Z",
+      "updated_at": "2026-04-14T09:19:18.000Z"
+    },
+    {
+      "id": 4,
+      "job_id": 4,
+      "doctor_id": 1,
+      "status": "applied",
+      "applied_date": "2026-04-15T15:30:53.000Z",
+      "updated_at": "2026-04-15T15:30:53.000Z"
+    }
+  ],
+  "messages": [
+    {
+      "id": 2,
+      "sender_id": 4,
+      "receiver_id": 3,
+      "message": "make sure you get new job posts",
+      "is_read": 1,
+      "created_at": "2026-04-13T22:09:19.000Z"
+    },
+    {
+      "id": 4,
+      "sender_id": 3,
+      "receiver_id": 4,
+      "message": "isee",
+      "is_read": 1,
+      "created_at": "2026-04-13T22:34:51.000Z"
+    },
+    {
+      "id": 6,
+      "sender_id": 4,
+      "receiver_id": 3,
+      "message": "nice",
+      "is_read": 1,
+      "created_at": "2026-04-13T23:38:13.000Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": 1,
+      "user_id": 3,
+      "title": "New Job Match",
+      "message": "A new \"loboratory\" position (urban) matching your profile has been posted.",
+      "is_read": 1,
+      "created_at": "2026-04-13T22:08:06.000Z"
+    },
+    {
+      "id": 2,
+      "user_id": 3,
+      "title": "New Message",
+      "message": "📬 Message from byumba: \"hello\"",
+      "is_read": 1,
+      "created_at": "2026-04-13T22:08:46.000Z"
+    },
+    {
+      "id": 3,
+      "user_id": 3,
+      "title": "New Message",
+      "message": "📬 Message from byumba: \"make sure you get new job posts\"",
+      "is_read": 1,
+      "created_at": "2026-04-13T22:09:19.000Z"
+    },
+    {
+      "id": 4,
+      "user_id": 4,
+      "title": "New Message",
+      "message": "📬 Message from TWAHUJUMUTIMA Ildebrande: \"yes\"",
+      "is_read": 0,
+      "created_at": "2026-04-13T22:10:49.000Z"
+    },
+    {
+      "id": 5,
+      "user_id": 4,
+      "title": "New Application",
+      "message": "TWAHUJUMUTIMA Ildebrande applied for \"General Practitioner Needed\"",
+      "is_read": 1,
+      "created_at": "2026-04-13T22:34:33.000Z"
+    },
+    {
+      "id": 6,
+      "user_id": 4,
+      "title": "New Message",
+      "message": "📬 Message from TWAHUJUMUTIMA Ildebrande: \"isee\"",
+      "is_read": 1,
+      "created_at": "2026-04-13T22:34:51.000Z"
+    },
+    {
+      "id": 7,
+      "user_id": 4,
+      "title": "New Application",
+      "message": "TWAHUJUMUTIMA Ildebrande applied for \"loboratory\"",
+      "is_read": 1,
+      "created_at": "2026-04-13T23:01:46.000Z"
+    },
+    {
+      "id": 8,
+      "user_id": 3,
+      "title": "New Message",
+      "message": "📬 Message from byumba: \"i seen it\"",
+      "is_read": 1,
+      "created_at": "2026-04-13T23:03:45.000Z"
+    },
+    {
+      "id": 9,
+      "user_id": 3,
+      "title": "New Job Match",
+      "message": "A new \"pharmacy\" position (urban) matching your profile has been posted.",
+      "is_read": 1,
+      "created_at": "2026-04-13T23:37:29.000Z"
+    },
+    {
+      "id": 10,
+      "user_id": 3,
+      "title": "New Message",
+      "message": "📬 Message from byumba: \"nice\"",
+      "is_read": 0,
+      "created_at": "2026-04-13T23:38:13.000Z"
+    },
+    {
+      "id": 11,
+      "user_id": 4,
+      "title": "New Message",
+      "message": "📬 Message from TWAHUJUMUTIMA Ildebrande: \"nice\"",
+      "is_read": 0,
+      "created_at": "2026-04-13T23:41:35.000Z"
+    },
+    {
+      "id": 12,
+      "user_id": 2,
+      "title": "hello every one",
+      "message": "i announce you the meet we get on google met foy every one",
+      "is_read": 0,
+      "created_at": "2026-04-13T23:48:35.000Z"
+    },
+    {
+      "id": 13,
+      "user_id": 3,
+      "title": "hello every one",
+      "message": "i announce you the meet we get on google met foy every one",
+      "is_read": 0,
+      "created_at": "2026-04-13T23:48:35.000Z"
+    },
+    {
+      "id": 14,
+      "user_id": 4,
+      "title": "hello every one",
+      "message": "i announce you the meet we get on google met foy every one",
+      "is_read": 0,
+      "created_at": "2026-04-13T23:48:35.000Z"
+    },
+    {
+      "id": 15,
+      "user_id": 2,
+      "title": "met",
+      "message": "hello",
+      "is_read": 0,
+      "created_at": "2026-04-14T07:20:29.000Z"
+    },
+    {
+      "id": 16,
+      "user_id": 3,
+      "title": "met",
+      "message": "hello",
+      "is_read": 0,
+      "created_at": "2026-04-14T07:20:29.000Z"
+    },
+    {
+      "id": 17,
+      "user_id": 4,
+      "title": "met",
+      "message": "hello",
+      "is_read": 0,
+      "created_at": "2026-04-14T07:20:29.000Z"
+    },
+    {
+      "id": 18,
+      "user_id": 2,
+      "title": "hello",
+      "message": "greet",
+      "is_read": 1,
+      "created_at": "2026-04-14T07:59:59.000Z"
+    },
+    {
+      "id": 19,
+      "user_id": 3,
+      "title": "hello",
+      "message": "greet",
+      "is_read": 0,
+      "created_at": "2026-04-14T07:59:59.000Z"
+    },
+    {
+      "id": 20,
+      "user_id": 4,
+      "title": "hello",
+      "message": "greet",
+      "is_read": 0,
+      "created_at": "2026-04-14T07:59:59.000Z"
+    },
+    {
+      "id": 21,
+      "user_id": 4,
+      "title": "New Message",
+      "message": "📬 Message from Someone: \"hello\"",
+      "is_read": 0,
+      "created_at": "2026-04-14T08:02:27.000Z"
+    },
+    {
+      "id": 22,
+      "user_id": 4,
+      "title": "New Message",
+      "message": "📬 Message from Someone: \"why i am\"",
+      "is_read": 0,
+      "created_at": "2026-04-14T08:09:42.000Z"
+    },
+    {
+      "id": 23,
+      "user_id": 2,
+      "title": "hello",
+      "message": "hello",
+      "is_read": 0,
+      "created_at": "2026-04-14T08:38:20.000Z"
+    },
+    {
+      "id": 24,
+      "user_id": 3,
+      "title": "hello",
+      "message": "hello",
+      "is_read": 0,
+      "created_at": "2026-04-14T08:38:20.000Z"
+    },
+    {
+      "id": 25,
+      "user_id": 4,
+      "title": "hello",
+      "message": "hello",
+      "is_read": 1,
+      "created_at": "2026-04-14T08:38:20.000Z"
+    },
+    {
+      "id": 26,
+      "user_id": 4,
+      "title": "New Message",
+      "message": "📬 Message from Someone: \"hu\"",
+      "is_read": 1,
+      "created_at": "2026-04-14T08:43:15.000Z"
+    },
+    {
+      "id": 27,
+      "user_id": 3,
+      "title": "New Message",
+      "message": "📬 Message from Someone: \"hy\"",
+      "is_read": 1,
+      "created_at": "2026-04-14T08:44:30.000Z"
+    },
+    {
+      "id": 28,
+      "user_id": 4,
+      "title": "New Application",
+      "message": "TWAHUJUMUTIMA Ildebrande applied for \"pharmacy\"",
+      "is_read": 1,
+      "created_at": "2026-04-14T09:19:19.000Z"
+    },
+    {
+      "id": 29,
+      "user_id": 4,
+      "title": "New Message",
+      "message": "📬 Message from TWAHUJUMUTIMA Ildebrande: \"tayari\"",
+      "is_read": 1,
+      "created_at": "2026-04-14T09:19:32.000Z"
+    },
+    {
+      "id": 30,
+      "user_id": 2,
+      "title": "New Message",
+      "message": "📬 New message from TWAHUJUMUTIMA Ildebrande: \"hy\"",
+      "is_read": 0,
+      "created_at": "2026-04-14T10:04:20.000Z"
+    },
+    {
+      "id": 31,
+      "user_id": 2,
+      "title": "New Message",
+      "message": "📬 New message from TWAHUJUMUTIMA Ildebrande: \"nice\"",
+      "is_read": 0,
+      "created_at": "2026-04-14T10:06:20.000Z"
+    },
+    {
+      "id": 32,
+      "user_id": 3,
+      "title": "New Job Match",
+      "message": "A new \"lob\" position (urban) matching your profile has been posted.",
+      "is_read": 1,
+      "created_at": "2026-04-14T10:10:18.000Z"
+    },
+    {
+      "id": 33,
+      "user_id": 4,
+      "title": "New Message",
+      "message": "📬 New message from Admin: \"hey\"",
+      "is_read": 0,
+      "created_at": "2026-04-15T13:12:14.000Z"
+    },
+    {
+      "id": 34,
+      "user_id": 4,
+      "title": "New Message",
+      "message": "📬 New message from Admin: \"hy\"",
+      "is_read": 0,
+      "created_at": "2026-04-15T13:14:44.000Z"
+    },
+    {
+      "id": 35,
+      "user_id": 2,
+      "title": "meet",
+      "message": "meeting is tomorrow",
+      "is_read": 0,
+      "created_at": "2026-04-15T13:15:49.000Z"
+    },
+    {
+      "id": 36,
+      "user_id": 3,
+      "title": "meet",
+      "message": "meeting is tomorrow",
+      "is_read": 1,
+      "created_at": "2026-04-15T13:15:49.000Z"
+    },
+    {
+      "id": 37,
+      "user_id": 4,
+      "title": "meet",
+      "message": "meeting is tomorrow",
+      "is_read": 0,
+      "created_at": "2026-04-15T13:15:49.000Z"
+    },
+    {
+      "id": 38,
+      "user_id": 4,
+      "title": "New Application",
+      "message": "TWAHUJUMUTIMA Ildebrande applied for \"lob\"",
+      "is_read": 0,
+      "created_at": "2026-04-15T15:30:53.000Z"
+    },
+    {
+      "id": 39,
+      "user_id": 2,
+      "title": "New Message",
+      "message": "📬 New message from TWAHUJUMUTIMA Ildebrande: \"hello\"",
+      "is_read": 0,
+      "created_at": "2026-04-15T15:31:47.000Z"
+    },
+    {
+      "id": 40,
+      "user_id": 4,
+      "title": "New Message",
+      "message": "📬 New message from TWAHUJUMUTIMA Ildebrande: \"hello\"",
+      "is_read": 0,
+      "created_at": "2026-04-15T15:31:57.000Z"
+    },
+    {
+      "id": 41,
+      "user_id": 2,
+      "title": "New Message",
+      "message": "📬 New message from byumba: \"hello\"",
+      "is_read": 0,
+      "created_at": "2026-04-15T15:33:20.000Z"
+    },
+    {
+      "id": 42,
+      "user_id": 3,
+      "title": "New Message",
+      "message": "📬 New message from byumba: \"helo\"",
+      "is_read": 0,
+      "created_at": "2026-04-15T15:33:28.000Z"
+    },
+    {
+      "id": 43,
+      "user_id": 3,
+      "title": "New Job Match",
+      "message": "A new \"loboratory\" position (urban) matching your profile has been posted.",
+      "is_read": 0,
+      "created_at": "2026-04-15T15:39:55.000Z"
+    },
+    {
+      "id": 44,
+      "user_id": 3,
+      "title": "📢 Broadcast Message",
+      "message": "google met: tomorrow we have google meet",
+      "is_read": 0,
+      "created_at": "2026-04-15T17:10:42.000Z"
+    },
+    {
+      "id": 45,
+      "user_id": 4,
+      "title": "📢 Broadcast Message",
+      "message": "google met: tomorrow we have google meet",
+      "is_read": 0,
+      "created_at": "2026-04-15T17:10:42.000Z"
+    },
+    {
+      "id": 46,
+      "user_id": 3,
+      "title": "google met",
+      "message": "tomorrow wehave google meet",
+      "is_read": 0,
+      "created_at": "2026-04-15T18:16:23.000Z"
+    },
+    {
+      "id": 47,
+      "user_id": 4,
+      "title": "google met",
+      "message": "tomorrow wehave google meet",
+      "is_read": 0,
+      "created_at": "2026-04-15T18:16:23.000Z"
+    }
+  ],
+  "user_settings": [
+    {
+      "user_id": 2,
+      "notifications_enabled": 1,
+      "email_notifications": 1,
+      "theme": "dark"
+    },
+    {
+      "user_id": 3,
+      "notifications_enabled": 1,
+      "email_notifications": 1,
+      "theme": "light"
+    }
+  ],
+  "admin_notifications": [],
+  "system_logs": [
+    {
+      "id": 1,
+      "action": "broadcast",
+      "details": "Sent to alls: google met",
+      "created_at": "2026-04-15T18:16:23.000Z"
+    },
+    {
+      "id": 2,
+      "action": "delete_message",
+      "details": "Deleted message ID 1",
+      "created_at": "2026-04-15T18:18:57.000Z"
+    },
+    {
+      "id": 3,
+      "action": "delete_message",
+      "details": "Deleted message ID 3",
+      "created_at": "2026-04-15T18:19:07.000Z"
+    },
+    {
+      "id": 4,
+      "action": "delete_message",
+      "details": "Deleted message ID 5",
+      "created_at": "2026-04-15T18:19:14.000Z"
+    },
+    {
+      "id": 5,
+      "action": "delete_message",
+      "details": "Deleted message ID 12",
+      "created_at": "2026-04-15T18:19:18.000Z"
+    },
+    {
+      "id": 6,
+      "action": "delete_message",
+      "details": "Deleted message ID 18",
+      "created_at": "2026-04-15T18:19:22.000Z"
+    },
+    {
+      "id": 7,
+      "action": "delete_message",
+      "details": "Deleted message ID 19",
+      "created_at": "2026-04-15T18:19:26.000Z"
+    },
+    {
+      "id": 8,
+      "action": "delete_message",
+      "details": "Deleted message ID 20",
+      "created_at": "2026-04-15T18:19:31.000Z"
+    },
+    {
+      "id": 9,
+      "action": "delete_message",
+      "details": "Deleted message ID 17",
+      "created_at": "2026-04-15T18:19:35.000Z"
+    },
+    {
+      "id": 10,
+      "action": "delete_message",
+      "details": "Deleted message ID 15",
+      "created_at": "2026-04-15T18:19:39.000Z"
+    },
+    {
+      "id": 11,
+      "action": "delete_message",
+      "details": "Deleted message ID 7",
+      "created_at": "2026-04-15T18:19:43.000Z"
+    },
+    {
+      "id": 12,
+      "action": "backup",
+      "details": "Created backup file backup_1776277221645.json",
+      "created_at": "2026-04-15T18:20:21.000Z"
+    },
+    {
+      "id": 13,
+      "action": "backup",
+      "details": "Created backup file backup_1776277238934.json",
+      "created_at": "2026-04-15T18:20:38.000Z"
+    },
+    {
+      "id": 14,
+      "action": "cleanup_jobs",
+      "details": "Deleted 0 old closed jobs",
+      "created_at": "2026-04-15T18:20:53.000Z"
+    },
+    {
+      "id": 15,
+      "action": "backup",
+      "details": "Created backup file backup_1776277869107.json",
+      "created_at": "2026-04-15T18:31:09.000Z"
+    },
+    {
+      "id": 16,
+      "action": "backup",
+      "details": "Created backup file backup_1776278766308.json",
+      "created_at": "2026-04-15T18:46:06.000Z"
+    },
+    {
+      "id": 17,
+      "action": "backup",
+      "details": "Created backup file backup_1776278768109.json",
+      "created_at": "2026-04-15T18:46:08.000Z"
+    },
+    {
+      "id": 18,
+      "action": "backup",
+      "details": "Created backup file backup_1776278769283.json",
+      "created_at": "2026-04-15T18:46:09.000Z"
+    },
+    {
+      "id": 19,
+      "action": "backup",
+      "details": "Created backup file backup_1776278770261.json",
+      "created_at": "2026-04-15T18:46:10.000Z"
+    },
+    {
+      "id": 20,
+      "action": "backup",
+      "details": "Created backup file backup_1776278776526.json",
+      "created_at": "2026-04-15T18:46:16.000Z"
+    }
+  ]
+}

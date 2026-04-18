@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="content_moderation">Content Moderation</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .content-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 10px 20px; background: #3498db; color: white; border: none; cursor: pointer; }
+        .tab-btn.active { background: #2c3e50; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .data-table th, .data-table td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        .delete-btn, .view-btn, .message-btn { padding: 5px 10px; margin: 0 2px; border: none; cursor: pointer; border-radius: 3px; }
+        .delete-btn { background: #e74c3c; color: white; }
+        .view-btn { background: #2ecc71; color: white; }
+        .message-btn { background: #3498db; color: white; }
+    </style>
+</head>
+<body>
+    <nav class="navbar" id="navbar"></nav>
+    <div class="container">
+        <h2 data-i18n="content_moderation">Content Moderation</h2>
+        <div class="content-tabs">
+            <button class="tab-btn active" onclick="showTab('documents')" data-i18n="doctors_documents">Doctors' Documents</button>
+            <button class="tab-btn" onclick="showTab('jobs')" data-i18n="job_posts">Job Posts</button>
+        </div>
+
+        <div id="documentsTab"><h3 data-i18n="doctors_documents">Doctors' Documents</h3><table class="data-table"><thead><tr><th data-i18n="name">Name</th><th data-i18n="specialty">Specialty</th><th data-i18n="email">Email</th><th data-i18n="cv">CV</th><th data-i18n="license">License</th><th data-i18n="actions">Actions</th></tr></thead><tbody id="doctorsList"></tbody></table></div>
+        <div id="jobsTab" style="display:none;"><h3 data-i18n="job_posts">Job Posts</h3><table class="data-table"><thead><tr><th data-i18n="title">Title</th><th data-i18n="hospital">Hospital</th><th data-i18n="specialty">Specialty</th><th data-i18n="location">Location</th><th data-i18n="status">Status</th><th data-i18n="action">Action</th></tr></thead><tbody id="jobsList"></tbody></table></div>
+    </div>
+    <script src="/js/common.js"></script>
+    <script>
+        async function loadDoctors() {
+            const res = await fetch('/api/admin/doctors-documents', { credentials: 'include' });
+            const doctors = await res.json();
+            const tbody = document.getElementById('doctorsList');
+            tbody.innerHTML = '';
+            doctors.forEach(d => {
+                tbody.insertRow().innerHTML = `
+                    <td>${escapeHtml(d.full_name)}</td>
+                    <td>${escapeHtml(d.specialty)}</td>
+                    <td>${escapeHtml(d.email)}</td>
+                    <td>${d.cv_path ? `<button class="view-btn" onclick="viewDoc(${d.user_id},'cv')" data-i18n="view_cv">View CV</button>` : '-'}</td>
+                    <td>${d.license_path ? `<button class="view-btn" onclick="viewDoc(${d.user_id},'license')" data-i18n="view_license">View License</button>` : '-'}</td>
+                    <td>
+                        <button class="message-btn" onclick="messageUser(${d.user_id})" data-i18n="message">💬 Message</button>
+                        ${d.cv_path ? `<button class="delete-btn" onclick="deleteDoc(${d.id},'cv')" data-i18n="delete_cv">Delete CV</button>` : ''}
+                        ${d.license_path ? `<button class="delete-btn" onclick="deleteDoc(${d.id},'license')" data-i18n="delete_license">Delete License</button>` : ''}
+                    </td>
+                `;
+            });
+            applyTranslations();
+        }
+
+        function messageUser(userId) {
+            window.location.href = `/messages.html?userId=${userId}`;
+        }
+
+        async function loadJobs() {
+            const res = await fetch('/api/admin/jobs', { credentials: 'include' });
+            const jobs = await res.json();
+            const tbody = document.getElementById('jobsList');
+            tbody.innerHTML = '';
+            jobs.forEach(j => {
+                tbody.insertRow().innerHTML = `
+                    <td>${escapeHtml(j.title)}</td>
+                    <td>${escapeHtml(j.hospital_name)}</td>
+                    <td>${escapeHtml(j.specialty_required)}</td>
+                    <td>${j.location_type}</td>
+                    <td>${j.status}</td>
+                    <td><button class="delete-btn" onclick="deleteJob(${j.id})" data-i18n="delete">Delete</button></td>
+                `;
+            });
+            applyTranslations();
+        }
+
+        function viewDoc(uid, type) { window.open(`/api/doctor/download/${type}?doctorId=${uid}`, '_blank'); }
+        async function deleteDoc(docId, type) { if (confirm('Delete?')){ await fetch(`/api/admin/doctor-document/${docId}/${type}`, { method: 'DELETE', credentials: 'include' }); loadDoctors(); } }
+        async function deleteJob(jobId) { if (confirm('Delete job?')){ await fetch(`/api/admin/job/${jobId}`, { method: 'DELETE', credentials: 'include' }); loadJobs(); } }
+
+        function showTab(tab) {
+            document.getElementById('documentsTab').style.display = tab === 'documents' ? 'block' : 'none';
+            document.getElementById('jobsTab').style.display = tab === 'jobs' ? 'block' : 'none';
+            if (tab === 'jobs') loadJobs();
+        }
+
+        (async () => {
+            await initAdminPanel();
+            await loadDoctors();
+        })();
+    </script>
+</body>
+</html>

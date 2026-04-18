@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - MedLink Africa</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .role-selector {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .role-btn {
+            padding: 12px 30px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            background: #f9f9f9;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .role-btn.selected {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        .role-btn.doctor.selected {
+            background: #3498db;
+        }
+        .role-btn.hospital.selected {
+            background: #e74c3c;
+        }
+        .register-form {
+            display: none;
+        }
+        .register-form.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo"><h1>MedLink Africa</h1></div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/login.html">Login</a>
+                <a href="/register.html">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="form-container">
+        <h2>Create Account</h2>
+        <div class="role-selector">
+            <div class="role-btn doctor" data-role="doctor">👨‍⚕️ Doctor</div>
+            <div class="role-btn hospital" data-role="hospital">🏥 Hospital</div>
+        </div>
+
+        <!-- Doctor Registration Form -->
+        <div id="doctorRegisterForm" class="register-form">
+            <form id="doctorForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="docEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="docPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label>Specialty/support type</label>
+                    <select id="specialty" required>
+                        <option value="General Practice">General Practice</option>
+                        <option value="Cardiology">Cardiology/heart treatment</option>
+                        <option value="Pediatrics">Pediatrics/child treatment</option>
+                        <option value="Surgery">Surgery/girl treatment</option>
+                        <option value="Obstetrics">Obstetrics/child birth</option>
+                        <option value="Radiology">Radiology/ take photo of inside body</option>
+                        <option value="Emergency Medicine">Emergency Medicine/ accident treatment</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Years of Experience</label>
+                    <input type="number" id="experienceYears" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Location Preference</label>
+                    <select id="locationPref">
+                        <option value="urban">Urban</option>
+                        <option value="rural">Rural</option>
+                        <option value="both">Both</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="phone">
+                </div>
+                <button type="submit">Register as Doctor</button>
+            </form>
+        </div>
+
+        <!-- Hospital Registration Form -->
+        <div id="hospitalRegisterForm" class="register-form">
+            <form id="hospitalForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="hospEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="hospPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>Hospital Name</label>
+                    <input type="text" id="hospitalName" required>
+                </div>
+                <div class="form-group">
+                    <label>Location (City, Country)</label>
+                    <input type="text" id="location" required>
+                </div>
+                <div class="form-group">
+                    <label>Contact Phone</label>
+                    <input type="tel" id="contactPhone">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="description" rows="3"></textarea>
+                </div>
+                <button type="submit">Register as Hospital</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script>
+        // Role selection handling
+        const roleBtns = document.querySelectorAll('.role-btn');
+        const doctorForm = document.getElementById('doctorRegisterForm');
+        const hospitalForm = document.getElementById('hospitalRegisterForm');
+
+        roleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                roleBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                const role = btn.getAttribute('data-role');
+                if (role === 'doctor') {
+                    doctorForm.classList.add('active');
+                    hospitalForm.classList.remove('active');
+                } else {
+                    hospitalForm.classList.add('active');
+                    doctorForm.classList.remove('active');
+                }
+            });
+        });
+
+        // Default: select doctor
+        document.querySelector('.role-btn.doctor').click();
+
+        // Doctor registration
+        document.getElementById('doctorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                email: document.getElementById('docEmail').value,
+                password: document.getElementById('docPassword').value,
+                role: 'doctor',
+                fullName: document.getElementById('fullName').value,
+                specialty: document.getElementById('specialty').value,
+                experienceYears: parseInt(document.getElementById('experienceYears').value) || 0,
+                locationPref: document.getElementById('locationPref').value,
+                phone: document.getElementById('phone').value
+            };
+            await register(payload);
+        });
+
+        // Hospital registration
+        document.getElementById('hospitalForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                email: document.getElementById('hospEmail').value,
+                password: document.getElementById('hospPassword').value,
+                role: 'hospital',
+                hospitalName: document.getElementById('hospitalName').value,
+                location: document.getElementById('location').value,
+                contactPhone: document.getElementById('contactPhone').value,
+                description: document.getElementById('description').value
+            };
+            await register(payload);
+        });
+
+        async function register(payload) {
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Registration successful! try login.');
+                    window.location.href = '/login.html';
+                } else {
+                    alert(data.error || 'Registration failed');
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="profile">Doctor Profile</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Navbar will be injected here by common.js -->
+    <nav class="navbar" id="navbar"></nav>
+
+    <div class="form-container">
+        <h2 data-i18n="profile">Doctor Profile</h2>
+        <form id="profileForm">
+            <div class="form-group">
+                <label data-i18n="full_name">Full Name</label>
+                <input type="text" id="fullName" required>
+            </div>
+            <div class="form-group">
+               <label>Specialty/support type</label>
+                    <select id="specialty" required>
+                        <option value="General Practice">General Practice</option>
+                        <option value="Cardiology">Cardiology/heart treatment</option>
+                        <option value="Pediatrics">Pediatrics/child treatment</option>
+                        <option value="Surgery">Surgery/girl treatment</option>
+                        <option value="Obstetrics">Obstetrics/child birth</option>
+                        <option value="Radiology">Radiology/ take photo of inside body</option>
+                        <option value="Emergency Medicine">Emergency Medicine/ accident treatment</option>
+                    </select>
+            </div>
+            <div class="form-group">
+                <label data-i18n="experience_years">Years of Experience</label>
+                <input type="number" id="experienceYears" min="0">
+            </div>
+            <div class="form-group">
+                <label data-i18n="location_pref">Location Preference</label>
+                <select id="locationPref">
+                    <option value="urban">Urban</option>
+                    <option value="rural">Rural</option>
+                    <option value="both">Both</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label data-i18n="salary_expectation">Salary Expectation (USD/year)</label>
+                <input type="number" id="salaryExpectation">
+            </div>
+            <div class="form-group">
+                <label data-i18n="phone">Phone Number</label>
+                <input type="tel" id="phone">
+            </div>
+            <div class="form-group">
+                <label data-i18n="bio">Bio</label>
+                <textarea id="bio" rows="3"></textarea>
+            </div>
+            <button type="submit" data-i18n="update_profile">Update Profile</button>
+        </form>
+
+        <hr>
+
+        <h3 data-i18n="documents">Documents</h3>
+        <form id="cvForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label data-i18n="upload_cv">Upload CV</label>
+                <input type="file" name="cv" accept=".pdf,.doc,.docx">
+            </div>
+            <button type="submit" data-i18n="upload">Upload CV</button>
+        </form>
+
+        <form id="licenseForm" enctype="multipart/form-data" style="margin-top:20px">
+            <div class="form-group">
+                <label data-i18n="upload_license">Upload Medical License</label>
+                <input type="file" name="license" accept=".pdf,.doc,.docx">
+            </div>
+            <button type="submit" data-i18n="upload">Upload License</button>
+        </form>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/doctor-profile.js"></script>
+    <script>
+        // Ensure the page initializes with the correct language and theme
+        (async () => {
+            await initUserPanel('doctor');
+            // The doctor-profile.js will load profile data after this
+        })();
+    </script>
+</body>
+</html>
