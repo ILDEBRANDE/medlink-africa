@@ -3,24 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="users_management">Users Management</title>
+    <title data-i18n="users_management">Users Management - Medical Recruitment</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        .user-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { padding: 10px 20px; background: #3498db; color: white; border: none; cursor: pointer; }
-        .tab-btn.active { background: #2c3e50; }
-        .user-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .user-table th, .user-table td { padding: 10px; border: 1px solid #ddd; text-align: left; }
-        .user-table th { background: #34495e; color: white; }
-        .delete-btn, .message-btn, .map-btn { padding: 5px 10px; margin: 0 2px; border: none; cursor: pointer; border-radius: 3px; }
-        .delete-btn { background: #e74c3c; color: white; }
-        .message-btn { background: #2ecc71; color: white; }
-        .map-btn { background: #3498db; color: white; }
-        .delete-btn:hover { background: #c0392b; }
-        .message-btn:hover { background: #27ae60; }
-        .map-btn:hover { background: #2980b9; }
+        .user-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .tab-btn.active {
+            background: #2c3e50;
+        }
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .user-table th, .user-table td {
+            padding: 10px;
+            border: 1px solid var(--border-color, #ddd);
+            text-align: left;
+        }
+        .user-table th {
+            background: #34495e;
+            color: white;
+        }
+        .action-btn {
+            padding: 5px 10px;
+            margin: 0 2px;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+        .message-btn {
+            background: #2ecc71;
+            color: white;
+        }
+        .message-btn:hover {
+            background: #27ae60;
+        }
+        .map-btn {
+            background: #f39c12;
+            color: white;
+        }
+        .map-btn:hover {
+            background: #e67e22;
+        }
+        .change-role-btn {
+            background: #9b59b6;
+            color: white;
+        }
+        .change-role-btn:hover {
+            background: #8e44ad;
+        }
+        
         /* Modal styles */
         .modal {
             display: none;
@@ -41,16 +94,34 @@
             border-radius: 10px;
             position: relative;
         }
-        .close {
+        .close-modal {
             position: absolute;
             right: 20px;
             top: 10px;
             font-size: 28px;
             cursor: pointer;
         }
-        #map {
+        #hospitalMap {
             height: 400px;
             margin-top: 10px;
+            border-radius: 8px;
+        }
+        .modal-hospital-name {
+            margin-bottom: 10px;
+            color: var(--primary-color, #3498db);
+        }
+        @media (max-width: 768px) {
+            .user-table {
+                display: block;
+                overflow-x: auto;
+            }
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+            #hospitalMap {
+                height: 300px;
+            }
         }
     </style>
 </head>
@@ -63,117 +134,235 @@
             <button class="tab-btn" onclick="showTab('hospitals')" data-i18n="hospitals">Hospitals</button>
         </div>
 
-        <!-- Doctors Tab -->
-        <div id="doctorsTab"><h3 data-i18n="doctors_list">Doctors List</h3><table class="user-table"><thead><tr><th data-i18n="name">Name</th><th data-i18n="email">Email</th><th data-i18n="specialty">Specialty</th><th data-i18n="experience">Experience</th><th data-i18n="action">Action</th></tr></thead><tbody id="doctorsList"></tbody></table></div>
+        <!-- Doctors Table -->
+        <div id="doctorsTab">
+            <h3 data-i18n="doctors_list">Doctors List</h3>
+            <table class="user-table" id="doctorsTable">
+                <thead>
+                    <tr>
+                        <th data-i18n="name">Name</th>
+                        <th data-i18n="email">Email</th>
+                        <th data-i18n="specialty">Specialty</th>
+                        <th data-i18n="experience">Experience</th>
+                        <th data-i18n="phone">Phone</th>
+                        <th data-i18n="actions">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="doctorsList">
+                    <tr><td colspan="6" data-i18n="loading">Loading...</td〉`
+                </tbody>
+            </table>
+        </div>
 
-        <!-- Hospitals Tab -->
-        <div id="hospitalsTab" style="display:none;"><h3 data-i18n="hospitals_list">Hospitals List</h3><table class="user-table"><thead><tr><th data-i18n="name">Name</th><th data-i18n="email">Email</th><th data-i18n="location">Location</th><th data-i18n="action">Action</th></tr></thead><tbody id="hospitalsList"></tbody></table></div>
+        <!-- Hospitals Table (with Map button) -->
+        <div id="hospitalsTab" style="display: none;">
+            <h3 data-i18n="hospitals_list">Hospitals List</h3>
+            <table class="user-table" id="hospitalsTable">
+                <thead>
+                    <tr>
+                        <th data-i18n="name">Hospital Name</th>
+                        <th data-i18n="email">Email</th>
+                        <th data-i18n="location">Location</th>
+                        <th data-i18n="phone">Contact Phone</th>
+                        <th data-i18n="actions">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="hospitalsList">
+                    <tr><td colspan="5" data-i18n="loading">Loading...</td〉`
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Map Modal -->
     <div id="mapModal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3 id="modalHospitalName">Hospital Location</h3>
-            <div id="map"></div>
+            <span class="close-modal">&times;</span>
+            <h3 id="modalHospitalName" class="modal-hospital-name">Hospital Location</h3>
+            <div id="hospitalMap"></div>
+            <p style="font-size: 12px; color: #888; margin-top: 10px;" data-i18n="map_instruction">📍 Location of the hospital on map</p>
         </div>
     </div>
 
     <script src="/js/common.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         let currentMap = null;
         let currentMarker = null;
 
         async function loadUsers() {
-            const res = await fetch('/api/admin/users', { credentials: 'include' });
-            const { doctors, hospitals } = await res.json();
-            const dBody = document.getElementById('doctorsList');
-            dBody.innerHTML = '';
-            doctors.forEach(d => {
-                dBody.insertRow().innerHTML = `
-                    <td>${escapeHtml(d.full_name)}</td>
-                    <td>${escapeHtml(d.email)}</td>
-                    <td>${escapeHtml(d.specialty)}</td>
-                    <td>${d.experience_years} yrs</td>
+            try {
+                const res = await fetch('/api/admin/users', { credentials: 'include' });
+                if (!res.ok) throw new Error('Failed to load');
+                const data = await res.json();
+                renderDoctors(data.doctors);
+                renderHospitals(data.hospitals);
+                applyTranslations();
+            } catch (err) {
+                console.error(err);
+                document.getElementById('doctorsList').innerHTML = '<tr><td colspan="6">Error loading doctors</td></tr>';
+                document.getElementById('hospitalsList').innerHTML = '<tr><td colspan="5">Error loading hospitals</td></tr>';
+            }
+        }
+
+        function renderDoctors(doctors) {
+            const tbody = document.getElementById('doctorsList');
+            tbody.innerHTML = '';
+            if (!doctors || doctors.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6">No doctors found</td></tr>';
+                return;
+            }
+            doctors.forEach(doc => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${escapeHtml(doc.full_name)}</td>
+                    <td>${escapeHtml(doc.email)}</td>
+                    <td>${escapeHtml(doc.specialty)}</td>
+                    <td>${doc.experience_years} yrs</td>
+                    <td>${doc.phone || 'N/A'}</td>
                     <td>
-                        <button class="message-btn" onclick="messageUser(${d.id})" data-i18n="message">💬 Message</button>
-                        <button class="delete-btn" onclick="deleteUser(${d.id})" data-i18n="delete">Delete</button>
+                        <button class="action-btn message-btn" onclick="messageUser(${doc.id})" data-i18n="message">💬 Message</button>
+                        <button class="action-btn change-role-btn" onclick="changeRole(${doc.id}, 'doctor')" data-i18n="change_role">🔄 Change Role</button>
+                        <button class="action-btn delete-btn" onclick="deleteUser(${doc.id})" data-i18n="delete">🗑️ Delete</button>
                     </td>
                 `;
             });
-            const hBody = document.getElementById('hospitalsList');
-            hBody.innerHTML = '';
-            hospitals.forEach(h => {
-                hBody.insertRow().innerHTML = `
-                    <td>${escapeHtml(h.hospital_name)}</td>
-                    <td>${escapeHtml(h.email)}</td>
-                    <td>${escapeHtml(h.location)}</td>
+        }
+
+        function renderHospitals(hospitals) {
+            const tbody = document.getElementById('hospitalsList');
+            tbody.innerHTML = '';
+            if (!hospitals || hospitals.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">No hospitals found</td></tr>';
+                return;
+            }
+            hospitals.forEach(hosp => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${escapeHtml(hosp.hospital_name)}</td>
+                    <td>${escapeHtml(hosp.email)}</td>
+                    <td>${escapeHtml(hosp.location)}</td>
+                    <td>${hosp.contact_phone || 'N/A'}</td>
                     <td>
-                        <button class="map-btn" onclick="showHospitalMap(${h.id}, '${escapeHtml(h.hospital_name)}')" data-i18n="map">📍 Map</button>
-                        <button class="message-btn" onclick="messageUser(${h.id})" data-i18n="message">💬 Message</button>
-                        <button class="delete-btn" onclick="deleteUser(${h.id})" data-i18n="delete">Delete</button>
+                        <button class="action-btn map-btn" onclick="showHospitalMap(${hosp.id}, '${escapeHtml(hosp.hospital_name)}', ${hosp.latitude || 'null'}, ${hosp.longitude || 'null'})" data-i18n="view_map">📍 Map</button>
+                        <button class="action-btn message-btn" onclick="messageUser(${hosp.id})" data-i18n="message">💬 Message</button>
+                        <button class="action-btn change-role-btn" onclick="changeRole(${hosp.id}, 'hospital')" data-i18n="change_role">🔄 Change Role</button>
+                        <button class="action-btn delete-btn" onclick="deleteUser(${hosp.id})" data-i18n="delete">🗑️ Delete</button>
                     </td>
                 `;
             });
-            applyTranslations();
         }
 
         function messageUser(userId) {
             window.location.href = `/messages.html?userId=${userId}`;
         }
 
-        async function deleteUser(userId) {
-            if (!confirm('Delete this user?')) return;
-            await fetch(`/api/admin/user/${userId}`, { method: 'DELETE', credentials: 'include' });
-            loadUsers();
-        }
-
-        async function showHospitalMap(hospitalId, hospitalName) {
+        function showHospitalMap(hospitalId, hospitalName, lat, lng) {
             const modal = document.getElementById('mapModal');
-            const modalTitle = document.getElementById('modalHospitalName');
-            modalTitle.innerText = hospitalName;
+            const title = document.getElementById('modalHospitalName');
+            title.innerText = hospitalName;
             modal.style.display = 'block';
-            let lat = -1.9403;  // default Kigali
-            let lng = 29.8739;
-            try {
-                const res = await fetch(`/api/admin/hospital-location/${hospitalId}`, { credentials: 'include' });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.latitude && data.longitude) {
-                        lat = data.latitude;
-                        lng = data.longitude;
-                    }
-                }
-            } catch(e) { console.error(e); }
+            
+            // Default coordinates (Kigali, Rwanda)
+            let latitude = -1.9403;
+            let longitude = 29.8739;
+            
+            if (lat && lng && lat !== 'null' && lng !== 'null') {
+                latitude = parseFloat(lat);
+                longitude = parseFloat(lng);
+            }
+            
             setTimeout(() => {
                 if (currentMap) currentMap.remove();
-                currentMap = L.map('map').setView([lat, lng], 13);
+                currentMap = L.map('hospitalMap').setView([latitude, longitude], 13);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(currentMap);
                 if (currentMarker) currentMarker.remove();
-                currentMarker = L.marker([lat, lng]).addTo(currentMap);
+                currentMarker = L.marker([latitude, longitude]).addTo(currentMap);
+                currentMarker.bindPopup(`<b>${escapeHtml(hospitalName)}</b><br>📍 Location`).openPopup();
             }, 100);
         }
 
+        async function changeRole(userId, currentRole) {
+            const newRole = currentRole === 'doctor' ? 'hospital' : 'doctor';
+            if (!confirm(`Change this user from ${currentRole} to ${newRole}? Their current profile will be replaced.`)) return;
+            try {
+                const res = await fetch(`/api/auth/change-role/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ newRole })
+                });
+                if (res.ok) {
+                    alert(`Role changed to ${newRole}`);
+                    loadUsers();
+                } else {
+                    const err = await res.json();
+                    alert(err.error || 'Failed to change role');
+                }
+            } catch (err) {
+                alert('Network error');
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (!confirm('Delete this user permanently?')) return;
+            try {
+                const res = await fetch(`/api/admin/user/${userId}`, { method: 'DELETE', credentials: 'include' });
+                if (res.ok) {
+                    alert('User deleted');
+                    loadUsers();
+                } else {
+                    alert('Failed to delete');
+                }
+            } catch (err) {
+                alert('Network error');
+            }
+        }
+
         function showTab(tab) {
-            document.getElementById('doctorsTab').style.display = tab === 'doctors' ? 'block' : 'none';
-            document.getElementById('hospitalsTab').style.display = tab === 'hospitals' ? 'block' : 'none';
-            document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-                btn.classList.toggle('active', (tab === 'doctors' && i === 0) || (tab === 'hospitals' && i === 1));
-            });
+            const doctorsTab = document.getElementById('doctorsTab');
+            const hospitalsTab = document.getElementById('hospitalsTab');
+            const btns = document.querySelectorAll('.tab-btn');
+            if (tab === 'doctors') {
+                doctorsTab.style.display = 'block';
+                hospitalsTab.style.display = 'none';
+                btns[0].classList.add('active');
+                btns[1].classList.remove('active');
+            } else {
+                doctorsTab.style.display = 'none';
+                hospitalsTab.style.display = 'block';
+                btns[0].classList.remove('active');
+                btns[1].classList.add('active');
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
         }
 
         // Modal close handlers
-        document.querySelector('.close').addEventListener('click', () => {
+        document.querySelector('.close-modal')?.addEventListener('click', () => {
             document.getElementById('mapModal').style.display = 'none';
+            if (currentMap) currentMap.remove();
         });
         window.onclick = (e) => {
             const modal = document.getElementById('mapModal');
-            if (e.target === modal) modal.style.display = 'none';
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                if (currentMap) currentMap.remove();
+            }
         };
 
         (async () => {
+            const user = await checkAuth();
+            if (!user || user.role !== 'admin') {
+                window.location.href = '/login.html';
+                return;
+            }
+            injectNavbar('admin');
             await initAdminPanel();
             await loadUsers();
         })();

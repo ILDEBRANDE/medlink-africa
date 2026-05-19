@@ -27,16 +27,30 @@
             border-radius: 10px;
             position: relative;
         }
-        .close {
+        .close, .close-applicants {
             position: absolute;
             right: 20px;
             top: 10px;
             font-size: 28px;
             cursor: pointer;
         }
-        #map {
-            height: 400px;
+        #map { height: 400px; margin-top: 10px; }
+        .applicant-card {
+            border: 1px solid var(--border-color, #ddd);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+        .status-applied { background: #f0ad4e; color: white; padding: 2px 6px; border-radius: 4px; }
+        .status-shortlisted { background: #5bc0de; color: white; padding: 2px 6px; border-radius: 4px; }
+        .status-interview-scheduled { background: #5cb85c; color: white; padding: 2px 6px; border-radius: 4px; }
+        .status-hired { background: #2ecc71; color: white; padding: 2px 6px; border-radius: 4px; }
+        .status-rejected { background: #d9534f; color: white; padding: 2px 6px; border-radius: 4px; }
+        .application-status-box {
             margin-top: 10px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -56,12 +70,20 @@
         </div>
     </div>
 
+    <!-- Applicants Modal -->
+    <div id="applicantsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-applicants">&times;</span>
+            <h3 id="applicantsModalTitle" data-i18n="view_all_applicants">All Applicants</h3>
+            <div id="applicantsListModal"></div>
+        </div>
+    </div>
+
     <script src="/js/common.js"></script>
     <script src="/js/doctor-jobs.js"></script>
     <script>
         (async () => {
             await initUserPanel('doctor');
-            // The doctor-jobs.js will load jobs and handle map button
         })();
     </script>
 </body>

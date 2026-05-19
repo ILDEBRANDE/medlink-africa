@@ -1,5 +1,5 @@
 {
-  "app_name": "MedLink Africa",
+  "app_name": "Medical recruitment",
   "home": "Home",
   "login": "Login",
   "register": "Register",
@@ -10,6 +10,18 @@
   "messages": "Messages",
   "notifications": "Notifications",
   "settings": "Settings",
+  "upload_photo": "Upload Photo"
+  "view_interview_details": "View Interview Details",
+  "your_application_status": "Your Application Status",
+  "rejection_reason": "Rejection Reason",
+  "view_interview_details": "View Interview Details",
+
+  "your_application_status": "Your Application Status",
+  "rejection_reason": "Rejection Reason",
+
+  "view_all_applicants": "View All Applicants",
+  "no_applicants": "No applicants yet.",
+
   "welcome": "Welcome",
   "doctor_dashboard": "Doctor Dashboard",
   "hospital_dashboard": "Hospital Dashboard",
@@ -120,5 +132,10 @@
   "system_actions": "System Actions",
   "create_backup": "Create Backup",
   "clean_jobs": "Clean Old Jobs",
-  "refresh": "Refresh Info"
+  "refresh": "Refresh Info",
+    "other_applicants": "Other Applicants",
+  "view_other_applicants": "View Other Applicants",
+  "no_other_applicants": "No other applicants yet.",
+  "message": "Message"
+
 }

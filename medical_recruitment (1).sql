@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 18, 2026 at 10:22 PM
+-- Generation Time: May 18, 2026 at 07:32 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `medlink_africa`
+-- Database: `medical_recruitment`
 --
 
 -- --------------------------------------------------------
@@ -42,7 +42,18 @@ CREATE TABLE `admin_notifications` (
 --
 
 INSERT INTO `admin_notifications` (`id`, `admin_user_id`, `hospital_id`, `action_type`, `details`, `is_read`, `created_at`) VALUES
-(1, 2, 1, 'post_job', 'Posted new job: surgery', 0, '2026-04-18 20:08:08');
+(3, 1, 5, 'post_job', 'Posted new job: surgery', 0, '2026-05-16 18:23:47'),
+(4, 1, 5, 'hired', 'Updated application #8 to hired', 0, '2026-05-16 18:38:57'),
+(5, 1, 5, 'interview_scheduled', 'Updated application #8 to interview_scheduled', 0, '2026-05-16 18:39:06'),
+(6, 1, 5, 'schedule_interview', 'Scheduled interview for application #8 at 2025-01-15 10:00:00', 0, '2026-05-16 18:39:32'),
+(7, 1, 5, 'hired', 'Updated application #8 to hired', 0, '2026-05-16 19:49:18'),
+(8, 1, 5, 'post_job', 'Posted new job: cut', 0, '2026-05-16 19:50:32'),
+(9, 1, 5, 'hired', 'Updated application #9 to hired', 0, '2026-05-16 23:55:22'),
+(10, 1, 5, 'post_job', 'Posted new job: treate', 0, '2026-05-17 12:10:55'),
+(11, 1, 5, 'schedule_interview', 'Scheduled interview for application #9 at 2025-01-15 10:00:00', 0, '2026-05-17 12:11:25'),
+(12, 1, 5, 'schedule_interview', 'Scheduled interview for application #9 at 2025-01-15 10:00:00', 0, '2026-05-17 12:13:39'),
+(13, 1, 5, 'schedule_interview', 'Scheduled interview for application #9 at 2025-01-15 10:00:00', 0, '2026-05-17 19:38:53'),
+(14, 1, 5, 'post_job', 'Posted new job: hu', 0, '2026-05-17 20:08:21');
 
 -- --------------------------------------------------------
 
@@ -53,8 +64,16 @@ INSERT INTO `admin_notifications` (`id`, `admin_user_id`, `hospital_id`, `action
 CREATE TABLE `admin_profiles` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `full_name` varchar(255) DEFAULT NULL
+  `full_name` varchar(255) DEFAULT NULL,
+  `profile_photo` varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admin_profiles`
+--
+
+INSERT INTO `admin_profiles` (`id`, `user_id`, `full_name`, `profile_photo`) VALUES
+(1, 1, 'Admin User', 'uploads\\photos\\photo-1779048103066-465761447.jpg');
 
 -- --------------------------------------------------------
 
@@ -75,7 +94,7 @@ CREATE TABLE `admin_settings` (
 --
 
 INSERT INTO `admin_settings` (`admin_user_id`, `language`, `theme`, `timezone`, `custom_color`) VALUES
-(2, 'en', 'light', 'Africa/Kigali', NULL);
+(1, 'en', 'light', 'Africa/Kigali', NULL);
 
 -- --------------------------------------------------------
 
@@ -98,11 +117,8 @@ CREATE TABLE `applications` (
 --
 
 INSERT INTO `applications` (`id`, `job_id`, `doctor_id`, `status`, `applied_date`, `updated_at`, `rejection_reason`) VALUES
-(1, 2, 1, 'applied', '2026-04-13 22:34:33', '2026-04-13 22:34:33', NULL),
-(2, 1, 1, 'interview_scheduled', '2026-04-13 23:01:46', '2026-04-17 09:26:39', NULL),
-(3, 3, 1, 'applied', '2026-04-14 09:19:18', '2026-04-14 09:19:18', NULL),
-(4, 4, 1, 'rejected', '2026-04-15 15:30:53', '2026-04-17 09:26:29', NULL),
-(5, 5, 1, 'rejected', '2026-04-17 07:27:41', '2026-04-17 10:43:52', 'you  have ivalid licence');
+(9, 11, 4, 'interview_scheduled', '2026-05-16 23:44:23', '2026-05-17 12:11:12', NULL),
+(10, 12, 4, 'rejected', '2026-05-17 12:55:21', '2026-05-17 19:37:44', 'i dont like experience');
 
 -- --------------------------------------------------------
 
@@ -120,13 +136,6 @@ CREATE TABLE `broadcast_messages` (
   `is_deleted` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `broadcast_messages`
---
-
-INSERT INTO `broadcast_messages` (`id`, `title`, `message`, `target_role`, `created_by`, `created_at`, `is_deleted`) VALUES
-(1, 'google met', 'tomorrow we have google meet', 'all', 2, '2026-04-15 17:10:42', 0);
-
 -- --------------------------------------------------------
 
 --
@@ -140,14 +149,6 @@ CREATE TABLE `broadcast_receipts` (
   `is_read` tinyint(1) DEFAULT 0,
   `read_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `broadcast_receipts`
---
-
-INSERT INTO `broadcast_receipts` (`id`, `broadcast_id`, `user_id`, `is_read`, `read_at`) VALUES
-(1, 1, 3, 0, NULL),
-(2, 1, 4, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -168,15 +169,17 @@ CREATE TABLE `doctors` (
   `bio` text DEFAULT NULL,
   `phone` varchar(50) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `profile_photo` varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `doctors`
 --
 
-INSERT INTO `doctors` (`id`, `user_id`, `full_name`, `specialty`, `experience_years`, `location_pref`, `salary_expectation`, `cv_path`, `license_path`, `bio`, `phone`, `created_at`, `updated_at`) VALUES
-(1, 3, 'TWAHUJUMUTIMA Ildebrande', 'General Practice', 5, 'urban', 5.00, 'uploads\\cvs\\cv-1776267035943-964854252.pdf', 'uploads\\licenses\\license-1776123645622-41893336.docx', NULL, '0795494474', '2026-04-14 09:01:24', '2026-04-15 15:30:36');
+INSERT INTO `doctors` (`id`, `user_id`, `full_name`, `specialty`, `experience_years`, `location_pref`, `salary_expectation`, `cv_path`, `license_path`, `bio`, `phone`, `created_at`, `updated_at`, `profile_photo`) VALUES
+(4, 10, 'doctor', 'General Practice', 10, 'rural', 0.00, 'uploads\\cvs\\cv-1778956422151-584267854.pdf', 'uploads\\licenses\\license-1778956408550-403069834.pdf', 'no get', '0795494494', '2026-05-16 18:20:11', '2026-05-17 13:12:02', 'uploads\\photos\\photo-1779023521997-128724022.jpg'),
+(5, 12, 'INEZA Sonia', 'Cardiology', 15, 'urban', 0.00, 'uploads\\cvs\\cv-1779030030528-382139480.pdf', 'uploads\\licenses\\license-1779030037006-21194687.pdf', 'no get', '0733487158', '2026-05-17 14:57:43', '2026-05-17 15:00:37', 'uploads\\photos\\photo-1779029966504-556280049.jpg');
 
 -- --------------------------------------------------------
 
@@ -197,15 +200,16 @@ CREATE TABLE `hospitals` (
   `latitude` decimal(10,8) DEFAULT NULL,
   `longitude` decimal(11,8) DEFAULT NULL,
   `address` varchar(500) DEFAULT NULL,
-  `location_verified` tinyint(1) DEFAULT 0
+  `location_verified` tinyint(1) DEFAULT 0,
+  `profile_photo` varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `hospitals`
 --
 
-INSERT INTO `hospitals` (`id`, `user_id`, `hospital_name`, `location`, `contact_phone`, `description`, `verification_status`, `suspended`, `is_verified`, `latitude`, `longitude`, `address`, `location_verified`) VALUES
-(1, 4, 'byumba', 'byumba', NULL, NULL, 'approved', 0, 0, NULL, NULL, NULL, 0);
+INSERT INTO `hospitals` (`id`, `user_id`, `hospital_name`, `location`, `contact_phone`, `description`, `verification_status`, `suspended`, `is_verified`, `latitude`, `longitude`, `address`, `location_verified`, `profile_photo`) VALUES
+(5, 11, 'byumba', 'byumba', '0783443960', 'hospital ', 'pending', 0, 0, NULL, NULL, NULL, 0, 'uploads\\photos\\photo-1779048919656-196095568.jpg');
 
 -- --------------------------------------------------------
 
@@ -224,13 +228,6 @@ CREATE TABLE `hospital_verification` (
   `rejection_reason` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `hospital_verification`
---
-
-INSERT INTO `hospital_verification` (`id`, `hospital_id`, `license_path`, `registration_number`, `verified_by`, `verified_at`, `status`, `rejection_reason`, `created_at`) VALUES
-(1, 1, 'uploads\\licenses\\license-1776161646017-332056503.pdf', NULL, 2, '2026-04-15 11:18:03', 'approved', NULL, '2026-04-13 22:04:58');
 
 -- --------------------------------------------------------
 
@@ -252,7 +249,8 @@ CREATE TABLE `interviews` (
 --
 
 INSERT INTO `interviews` (`id`, `application_id`, `scheduled_datetime`, `meeting_link`, `notes`, `status`) VALUES
-(1, 2, '2025-01-15 10:00:00', 'https://meet.google.com/xxx', NULL, 'scheduled');
+(2, 8, '2025-01-15 10:00:00', 'https://meet.google.com/xxx', '', 'scheduled'),
+(3, 9, '2025-01-15 10:00:00', 'https://meet.google.com/xxx', '', 'scheduled');
 
 -- --------------------------------------------------------
 
@@ -279,13 +277,9 @@ CREATE TABLE `jobs` (
 --
 
 INSERT INTO `jobs` (`id`, `hospital_id`, `title`, `description`, `specialty_required`, `location_type`, `salary_range`, `posted_date`, `status`, `is_verified`, `admin_approved`) VALUES
-(1, 1, 'loboratory', 'make pharmacy trust by user', 'General Practice', 'urban', '65', '2026-04-13 22:08:06', 'open', 1, 0),
-(2, 1, 'General Practitioner Needed', 'We need a GP for our clinic in Kigali.', 'General Practice', 'urban', '60k-80k', '2026-04-13 22:26:50', 'open', 1, 0),
-(3, 1, 'pharmacy', 'provide clar medecine to sick people', 'General Practice', 'urban', '65', '2026-04-13 23:37:28', 'open', 1, 0),
-(4, 1, 'lob', 'make lab excellet', 'General Practice', 'urban', '70', '2026-04-14 10:10:17', 'open', 1, 0),
-(5, 1, 'loboratory', 'hardworking', 'General Practice', 'urban', '70', '2026-04-15 15:39:54', 'open', 1, 0),
-(7, 1, 'radiology', 'take photo inside body and treat sick people', 'Cardiology', 'urban', '65', '2026-04-18 19:59:01', 'open', 0, 0),
-(8, 1, 'surgery', 'support girls', 'Surgery', 'rural', '70', '2026-04-18 20:08:08', 'open', 0, 0);
+(11, 5, 'cut', 'support accident', 'General Practice', 'rural', '', '2026-05-16 19:50:32', 'open', 0, 0),
+(12, 5, 'treate', 'treat people', 'General Practice', 'urban', '$60k', '2026-05-17 12:10:55', 'open', 0, 0),
+(13, 5, 'hu', 'dfgh', 'General Practice', 'rural', '$65k', '2026-05-17 20:08:21', 'open', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -307,15 +301,18 @@ CREATE TABLE `messages` (
 --
 
 INSERT INTO `messages` (`id`, `sender_id`, `receiver_id`, `message`, `is_read`, `created_at`) VALUES
-(37, 4, 3, 'hello', 1, '2026-04-18 15:37:56'),
-(38, 4, 3, 'hy', 1, '2026-04-18 15:38:06'),
-(39, 3, 4, 'hello', 1, '2026-04-18 15:39:01'),
-(41, 3, 4, 'hy', 1, '2026-04-18 16:37:58'),
-(42, 3, 4, 'as', 1, '2026-04-18 17:37:01'),
-(43, 2, 3, 'hello', 1, '2026-04-18 18:03:55'),
-(44, 3, 2, 'hy', 1, '2026-04-18 18:04:46'),
-(45, 2, 4, 'hello', 1, '2026-04-18 18:08:27'),
-(47, 3, 2, 'nones', 0, '2026-04-18 19:53:38');
+(52, 11, 10, 'hello doctor you can apply this job', 1, '2026-05-16 18:24:30'),
+(53, 10, 11, 'give me answer faster', 1, '2026-05-16 18:35:44'),
+(54, 10, 11, 'hy', 1, '2026-05-16 19:46:33'),
+(55, 10, 11, 'hello', 1, '2026-05-16 23:46:39'),
+(56, 10, 11, 'hy', 1, '2026-05-17 12:02:00'),
+(57, 11, 10, 'hy doctor courage', 1, '2026-05-17 12:11:51'),
+(58, 10, 11, 'byanze', 1, '2026-05-17 14:09:00'),
+(60, 12, 11, 'hello', 1, '2026-05-17 15:02:04'),
+(61, 10, 1, 'hy', 1, '2026-05-17 19:31:58'),
+(62, 1, 10, 'hello', 1, '2026-05-17 19:59:11'),
+(63, 1, 11, 'hy', 0, '2026-05-17 19:59:32'),
+(64, 11, 12, 'hy', 0, '2026-05-17 20:08:57');
 
 -- --------------------------------------------------------
 
@@ -337,33 +334,16 @@ CREATE TABLE `notifications` (
 --
 
 INSERT INTO `notifications` (`id`, `user_id`, `title`, `message`, `is_read`, `created_at`) VALUES
-(2, 3, 'New Message', '📬 Message from byumba: \"hello\"', 1, '2026-04-13 22:08:46'),
-(11, 4, 'New Message', '📬 Message from TWAHUJUMUTIMA Ildebrande: \"nice\"', 1, '2026-04-13 23:41:35'),
-(12, 2, 'hello every one', 'i announce you the meet we get on google met foy every one', 0, '2026-04-13 23:48:35'),
-(15, 2, 'met', 'hello', 0, '2026-04-14 07:20:29'),
-(18, 2, 'hello', 'greet', 1, '2026-04-14 07:59:59'),
-(23, 2, 'hello', 'hello', 0, '2026-04-14 08:38:20'),
-(30, 2, 'New Message', '📬 New message from TWAHUJUMUTIMA Ildebrande: \"hy\"', 0, '2026-04-14 10:04:20'),
-(31, 2, 'New Message', '📬 New message from TWAHUJUMUTIMA Ildebrande: \"nice\"', 0, '2026-04-14 10:06:20'),
-(35, 2, 'meet', 'meeting is tomorrow', 0, '2026-04-15 13:15:49'),
-(39, 2, 'New Message', '📬 New message from TWAHUJUMUTIMA Ildebrande: \"hello\"', 0, '2026-04-15 15:31:47'),
-(41, 2, 'New Message', '📬 New message from byumba: \"hello\"', 0, '2026-04-15 15:33:20'),
-(53, 4, 'New Application', 'TWAHUJUMUTIMA Ildebrande applied for \"lab1\"', 1, '2026-04-17 09:30:11'),
-(54, 3, 'Application Update', 'Your application for \"lab1\" was not selected.', 1, '2026-04-17 09:33:44'),
-(56, 4, 'google met', 'hello', 1, '2026-04-18 11:28:36'),
-(58, 4, 'google met', 'hy', 1, '2026-04-18 11:36:40'),
-(75, 3, 'asdcbgfd', 'regfgfds', 1, '2026-04-18 15:11:26'),
-(76, 3, 'sfghdjfghfgds', 'asrdfsghjkvlkvjhgg', 1, '2026-04-18 15:22:35'),
-(77, 4, 'sfghdjfghfgds', 'asrdfsghjkvlkvjhgg', 1, '2026-04-18 15:22:35'),
-(78, 3, 'ureytut', 'tri;uiyrytyuoiiuouy', 1, '2026-04-18 15:39:43'),
-(79, 4, 'ureytut', 'tri;uiyrytyuoiiuouy', 1, '2026-04-18 15:39:43'),
-(80, 3, '[65eyui[yt', 'opiuytrewrtyui', 1, '2026-04-18 16:06:59'),
-(81, 4, '[65eyui[yt', 'opiuytrewrtyui', 1, '2026-04-18 16:07:00'),
-(82, 3, 'google met', '\'iuyrewee\n[iuytyuiuytstrerty', 1, '2026-04-18 16:25:42'),
-(83, 4, 'google met', '\'iuyrewee\n[iuytyuiuytstrerty', 1, '2026-04-18 16:25:42'),
-(84, 3, 'google met', 'asdfddsd', 0, '2026-04-18 17:59:05'),
-(85, 4, 'google met', 'asdfddsd', 1, '2026-04-18 17:59:05'),
-(86, 3, 'New Job Match', 'A new \"radiology\" position (urban) matching your profile has been posted.', 0, '2026-04-18 19:59:01');
+(90, 10, 'hello', 'hello every one', 1, '2026-05-16 19:10:53'),
+(91, 10, 'New Job Match', 'A new \"cut\" position (rural) matching your profile has been posted.', 1, '2026-05-16 19:50:32'),
+(92, 10, 'New Job Match', 'A new \"treate\" position (urban) matching your profile has been posted.', 1, '2026-05-17 12:10:55'),
+(93, 10, 'Application interview_scheduled', 'An interview has been scheduled for you. For job: cut', 1, '2026-05-17 12:11:12'),
+(94, 11, 'New Application', 'doctor applied for \"treate\".', 1, '2026-05-17 12:55:21'),
+(96, 11, 'greet', 'helllo every one', 1, '2026-05-17 13:58:59'),
+(97, 10, 'Application rejected', 'Your application was rejected. Reason: i dont like experience For job: treate', 1, '2026-05-17 19:37:44'),
+(99, 11, 'hy', 'hy', 1, '2026-05-17 20:01:13'),
+(100, 12, 'hy', 'hy', 0, '2026-05-17 20:01:13'),
+(101, 10, 'New Job Match', 'A new \"hu\" position (rural) matching your profile has been posted.', 1, '2026-05-17 20:08:21');
 
 -- --------------------------------------------------------
 
@@ -383,13 +363,6 @@ CREATE TABLE `reports` (
   `resolved_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `reports`
---
-
-INSERT INTO `reports` (`id`, `reporter_id`, `reported_id`, `report_type`, `description`, `status`, `created_at`, `resolved_by`, `resolved_at`) VALUES
-(1, 3, 4, 'fake_job', 'Test report for debugging', 'resolved', '2026-04-14 08:46:20', 2, '2026-04-14 08:46:27');
-
 -- --------------------------------------------------------
 
 --
@@ -408,60 +381,31 @@ CREATE TABLE `system_logs` (
 --
 
 INSERT INTO `system_logs` (`id`, `action`, `details`, `created_at`) VALUES
-(1, 'broadcast', 'Sent to alls: google met', '2026-04-15 18:16:23'),
-(2, 'delete_message', 'Deleted message ID 1', '2026-04-15 18:18:57'),
-(3, 'delete_message', 'Deleted message ID 3', '2026-04-15 18:19:07'),
-(4, 'delete_message', 'Deleted message ID 5', '2026-04-15 18:19:14'),
-(5, 'delete_message', 'Deleted message ID 12', '2026-04-15 18:19:18'),
-(6, 'delete_message', 'Deleted message ID 18', '2026-04-15 18:19:22'),
-(7, 'delete_message', 'Deleted message ID 19', '2026-04-15 18:19:26'),
-(8, 'delete_message', 'Deleted message ID 20', '2026-04-15 18:19:31'),
-(9, 'delete_message', 'Deleted message ID 17', '2026-04-15 18:19:35'),
-(10, 'delete_message', 'Deleted message ID 15', '2026-04-15 18:19:39'),
-(11, 'delete_message', 'Deleted message ID 7', '2026-04-15 18:19:43'),
-(12, 'backup', 'Created backup file backup_1776277221645.json', '2026-04-15 18:20:21'),
-(13, 'backup', 'Created backup file backup_1776277238934.json', '2026-04-15 18:20:38'),
-(14, 'cleanup_jobs', 'Deleted 0 old closed jobs', '2026-04-15 18:20:53'),
-(15, 'backup', 'Created backup file backup_1776277869107.json', '2026-04-15 18:31:09'),
-(16, 'backup', 'Created backup file backup_1776278766308.json', '2026-04-15 18:46:06'),
-(17, 'backup', 'Created backup file backup_1776278768109.json', '2026-04-15 18:46:08'),
-(18, 'backup', 'Created backup file backup_1776278769283.json', '2026-04-15 18:46:09'),
-(19, 'backup', 'Created backup file backup_1776278770261.json', '2026-04-15 18:46:10'),
-(20, 'backup', 'Created backup file backup_1776278776526.json', '2026-04-15 18:46:16'),
-(21, 'backup', 'Created backup file backup_1776278778042.json', '2026-04-15 18:46:18'),
-(22, 'backup', 'Created backup file backup_1776278779542.json', '2026-04-15 18:46:19'),
-(23, 'backup', 'Created backup file backup_1776278781256.json', '2026-04-15 18:46:21'),
-(24, 'backup', 'Created backup file backup_1776278823393.json', '2026-04-15 18:47:03'),
-(25, 'backup', 'Created backup file backup_1776278825150.json', '2026-04-15 18:47:05'),
-(26, 'backup', 'Created backup file backup_1776278833997.json', '2026-04-15 18:47:14'),
-(27, 'backup', 'Created backup file backup_1776278902899.json', '2026-04-15 18:48:22'),
-(28, 'backup', 'Created backup file backup_1776278907873.json', '2026-04-15 18:48:27'),
-(29, 'backup', 'Created backup file backup_1776279078076.json', '2026-04-15 18:51:18'),
-(30, 'backup', 'Created backup file backup_1776279079133.json', '2026-04-15 18:51:19'),
-(31, 'backup', 'Created backup file backup_1776279809538.json', '2026-04-15 19:03:29'),
-(32, 'backup', 'Created backup file backup_1776280541854.json', '2026-04-15 19:15:41'),
-(33, 'backup', 'Created backup file backup_1776280542823.json', '2026-04-15 19:15:42'),
-(34, 'backup', 'Created backup file backup_1776280544354.json', '2026-04-15 19:15:44'),
-(35, 'delete_message', 'Deleted message ID 25', '2026-04-18 08:20:04'),
-(36, 'delete_message', 'Deleted message ID 24', '2026-04-18 08:20:10'),
-(37, 'delete_message', 'Deleted message ID 27', '2026-04-18 08:20:20'),
-(38, 'broadcast', 'Sent to alls: google met', '2026-04-18 11:28:36'),
-(39, 'cleanup_jobs', 'Deleted 0 old closed jobs', '2026-04-18 11:29:34'),
-(40, 'broadcast', 'Sent to alls: google met', '2026-04-18 11:36:40'),
-(41, 'broadcast', 'Sent to alls: google met', '2026-04-18 11:37:57'),
-(42, 'broadcast', 'Sent to doctors: greet', '2026-04-18 11:46:08'),
-(43, 'broadcast', 'Sent to alls: google met', '2026-04-18 12:00:25'),
-(44, 'broadcast', 'Sent to alls: google met', '2026-04-18 12:34:10'),
-(45, 'delete_message', 'Deleted message ID 31', '2026-04-18 12:34:44'),
-(46, 'broadcast', 'Sent to alls: google met', '2026-04-18 12:35:10'),
-(47, 'delete_job', 'Deleted job ID 6', '2026-04-18 15:10:58'),
-(48, 'broadcast', 'Sent to doctors: asdcbgfd', '2026-04-18 15:11:26'),
-(49, 'broadcast', 'Sent to alls: sfghdjfghfgds', '2026-04-18 15:22:36'),
-(50, 'broadcast', 'Sent to alls: ureytut', '2026-04-18 15:39:44'),
-(51, 'delete_message', 'Deleted message ID 40', '2026-04-18 15:42:00'),
-(52, 'broadcast', 'Sent to alls: google met', '2026-04-18 16:25:42'),
-(53, 'broadcast', 'Sent to alls: google met', '2026-04-18 17:59:05'),
-(54, 'delete_message', 'Deleted message ID 48', '2026-04-18 20:17:08');
+(55, 'broadcast', 'Sent to doctors: hello', '2026-05-16 19:10:53'),
+(56, 'cleanup_jobs', 'Deleted 0 old closed jobs', '2026-05-16 23:58:50'),
+(57, 'cleanup_jobs', 'Deleted 0 old closed jobs', '2026-05-17 00:00:56'),
+(58, 'delete_job', 'Deleted job ID 10', '2026-05-17 00:01:05'),
+(59, 'broadcast', 'Sent to alls: greet', '2026-05-17 13:58:59'),
+(60, 'cleanup_jobs', 'Deleted 0 old closed jobs', '2026-05-17 13:59:44'),
+(61, 'backup', 'Created backup file backup_1779026386480.json', '2026-05-17 13:59:46'),
+(62, 'backup', 'Created backup file backup_1779026389010.json', '2026-05-17 13:59:49'),
+(63, 'backup', 'Created backup file backup_1779026389091.json', '2026-05-17 13:59:49'),
+(64, 'backup', 'Created backup file backup_1779026389318.json', '2026-05-17 13:59:49'),
+(65, 'backup', 'Created backup file backup_1779026392430.json', '2026-05-17 13:59:52'),
+(66, 'backup', 'Created backup file backup_1779026393597.json', '2026-05-17 13:59:53'),
+(67, 'backup', 'Created backup file backup_1779026393708.json', '2026-05-17 13:59:53'),
+(68, 'backup', 'Created backup file backup_1779026396009.json', '2026-05-17 13:59:56'),
+(69, 'backup', 'Created backup file backup_1779026398643.json', '2026-05-17 13:59:58'),
+(70, 'backup', 'Created backup file backup_1779026398780.json', '2026-05-17 13:59:58'),
+(71, 'backup', 'Created backup file backup_1779026400526.json', '2026-05-17 14:00:00'),
+(72, 'backup', 'Created backup file backup_1779026400730.json', '2026-05-17 14:00:00'),
+(73, 'backup', 'Created backup file backup_1779026402607.json', '2026-05-17 14:00:02'),
+(74, 'backup', 'Created backup file backup_1779026403928.json', '2026-05-17 14:00:03'),
+(75, 'backup', 'Created backup file backup_1779026405162.json', '2026-05-17 14:00:05'),
+(76, 'backup', 'Created backup file backup_1779026414510.json', '2026-05-17 14:00:14'),
+(77, 'backup', 'Created backup file backup_1779026414706.json', '2026-05-17 14:00:14'),
+(78, 'backup', 'Created backup file backup_1779026415776.json', '2026-05-17 14:00:15'),
+(79, 'backup', 'Created backup file backup_1779026415965.json', '2026-05-17 14:00:15');
 
 -- --------------------------------------------------------
 
@@ -484,9 +428,44 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `email`, `password_hash`, `role`, `language`, `created_at`, `must_change_password`) VALUES
-(2, 'admin@medlink.com', '$2b$10$tBLk9eY7mrZdwMRmIhgPaeMyCQsR7qh3oGVXeMtABYCisjMgbTKZ6', 'admin', 'en', '2026-04-13 21:59:39', 0),
-(3, 'ildebrandetwahujumutima@gmail.com', '$2b$12$e/2TzdXSsUFzYoZCJIqOk.kUi9OtImxM7/RGwhlLpLaUeb0Usi.hW', 'doctor', 'en', '2026-04-13 22:02:01', 0),
-(4, 'ilidebrandetwahujumutima@gmail.com', '$2b$12$mtDI2baEOjq6ikorewjP.OXcRrQ6lNLQeJp.ysIBRyu1AAmdG18HS', 'hospital', 'en', '2026-04-13 22:04:58', 0);
+(1, 'admin@gmail.com', '$2b$10$U3ZYoVD.fKl1kd/ynTtwleG3Hx8zuKIAJLQHMq2RmxchlcZOv832C', 'admin', 'en', '2026-05-16 14:27:50', 0),
+(10, 'doctor@gmail.com', '$2b$10$0ojv52fiLWcnBpKo5FqH/uipE7qo56O9uNRnZ.LVjekO9JupXmJbu', 'doctor', 'en', '2026-05-16 18:20:11', 0),
+(11, 'hospital@gmail.com', '$2b$10$3OJA9Q2tKXRC6MTpzvo3t.TQhNYGiOSZriGaVa5xR6vIz/k9izxnK', 'hospital', 'en', '2026-05-16 18:21:22', 0),
+(12, 'inezasonia@gmail.com', '$2b$10$FE.AJ3LpK4OJg7g/o.1jQuWyattJUGq3AaSTlBrRLERKkBU9hUFdG', 'doctor', 'fr', '2026-05-17 14:57:43', 0);
+
+--
+-- Triggers `users`
+--
+DELIMITER $$
+CREATE TRIGGER `after_user_role_change` AFTER UPDATE ON `users` FOR EACH ROW BEGIN
+    -- If role changed from doctor to hospital
+    IF OLD.role = 'doctor' AND NEW.role = 'hospital' THEN
+        -- Delete from doctors table
+        DELETE FROM doctors WHERE user_id = NEW.id;
+        
+        -- Insert into hospitals table (with minimal info, ask user to complete later)
+        INSERT INTO hospitals (user_id, hospital_name, location, contact_phone)
+        VALUES (NEW.id, 'New Hospital', 'Unknown', NULL);
+        
+        -- Delete related applications (optional, because they are linked to doctor profile)
+        DELETE FROM applications WHERE doctor_id = (SELECT id FROM doctors WHERE user_id = NEW.id);
+    END IF;
+
+    -- If role changed from hospital to doctor
+    IF OLD.role = 'hospital' AND NEW.role = 'doctor' THEN
+        -- Delete from hospitals table
+        DELETE FROM hospitals WHERE user_id = NEW.id;
+        
+        -- Insert into doctors table
+        INSERT INTO doctors (user_id, full_name, specialty, experience_years, location_pref)
+        VALUES (NEW.id, 'New Doctor', 'General Practice', 0, 'both');
+        
+        -- Delete related jobs posted by this hospital
+        DELETE FROM jobs WHERE hospital_id = (SELECT id FROM hospitals WHERE user_id = NEW.id);
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -506,9 +485,9 @@ CREATE TABLE `user_settings` (
 --
 
 INSERT INTO `user_settings` (`user_id`, `notifications_enabled`, `email_notifications`, `theme`) VALUES
-(2, 1, 1, 'dark'),
-(3, 1, 1, 'light'),
-(4, 1, 1, 'light');
+(10, 1, 1, 'light'),
+(11, 1, 1, 'light'),
+(12, 1, 1, 'dark');
 
 --
 -- Indexes for dumped tables
@@ -645,19 +624,19 @@ ALTER TABLE `user_settings`
 -- AUTO_INCREMENT for table `admin_notifications`
 --
 ALTER TABLE `admin_notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `admin_profiles`
 --
 ALTER TABLE `admin_profiles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `applications`
 --
 ALTER TABLE `applications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `broadcast_messages`
@@ -675,13 +654,13 @@ ALTER TABLE `broadcast_receipts`
 -- AUTO_INCREMENT for table `doctors`
 --
 ALTER TABLE `doctors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `hospitals`
 --
 ALTER TABLE `hospitals`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `hospital_verification`
@@ -693,25 +672,25 @@ ALTER TABLE `hospital_verification`
 -- AUTO_INCREMENT for table `interviews`
 --
 ALTER TABLE `interviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `jobs`
 --
 ALTER TABLE `jobs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
 
 --
 -- AUTO_INCREMENT for table `reports`
@@ -723,13 +702,13 @@ ALTER TABLE `reports`
 -- AUTO_INCREMENT for table `system_logs`
 --
 ALTER TABLE `system_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Constraints for dumped tables
@@ -749,88 +728,11 @@ ALTER TABLE `admin_profiles`
   ADD CONSTRAINT `admin_profiles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `admin_settings`
---
-ALTER TABLE `admin_settings`
-  ADD CONSTRAINT `admin_settings_ibfk_1` FOREIGN KEY (`admin_user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
 -- Constraints for table `applications`
 --
 ALTER TABLE `applications`
   ADD CONSTRAINT `applications_ibfk_1` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `applications_ibfk_2` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `broadcast_messages`
---
-ALTER TABLE `broadcast_messages`
-  ADD CONSTRAINT `broadcast_messages_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `broadcast_receipts`
---
-ALTER TABLE `broadcast_receipts`
-  ADD CONSTRAINT `broadcast_receipts_ibfk_1` FOREIGN KEY (`broadcast_id`) REFERENCES `broadcast_messages` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `broadcast_receipts_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `doctors`
---
-ALTER TABLE `doctors`
-  ADD CONSTRAINT `doctors_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `hospitals`
---
-ALTER TABLE `hospitals`
-  ADD CONSTRAINT `hospitals_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `hospital_verification`
---
-ALTER TABLE `hospital_verification`
-  ADD CONSTRAINT `hospital_verification_ibfk_1` FOREIGN KEY (`hospital_id`) REFERENCES `hospitals` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `hospital_verification_ibfk_2` FOREIGN KEY (`verified_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
-
---
--- Constraints for table `interviews`
---
-ALTER TABLE `interviews`
-  ADD CONSTRAINT `interviews_ibfk_1` FOREIGN KEY (`application_id`) REFERENCES `applications` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `jobs`
---
-ALTER TABLE `jobs`
-  ADD CONSTRAINT `jobs_ibfk_1` FOREIGN KEY (`hospital_id`) REFERENCES `hospitals` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `messages`
---
-ALTER TABLE `messages`
-  ADD CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `notifications`
---
-ALTER TABLE `notifications`
-  ADD CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `reports`
---
-ALTER TABLE `reports`
-  ADD CONSTRAINT `reports_ibfk_1` FOREIGN KEY (`reporter_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `reports_ibfk_2` FOREIGN KEY (`reported_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `reports_ibfk_3` FOREIGN KEY (`resolved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
-
---
--- Constraints for table `user_settings`
---
-ALTER TABLE `user_settings`
-  ADD CONSTRAINT `user_settings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

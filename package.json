@@ -1,5 +1,5 @@
 {
-  "name": "medlink-africa",
+  "name": "medical recruitment",
   "version": "1.0.0",
   "description": "Medical Recruitment Platform for East Africa",
   "main": "app.js",
@@ -18,7 +18,7 @@
     "express-validator": "^7.0.1",
     "helmet": "^8.1.0",
     "multer": "^1.4.5-lts.1",
-    "mysql2": "^3.6.0"
+    "mysql2": "^3.22.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

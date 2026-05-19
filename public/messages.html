@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="messages">Messages</title>
+    <title data-i18n="messages">Messages - Medical Recruitment</title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
         .chat-container {
@@ -30,6 +30,7 @@
             padding: 15px;
             cursor: pointer;
             border-bottom: 1px solid var(--border-color, #eee);
+            transition: background 0.2s;
         }
         .conversation-item:hover {
             background: rgba(0,0,0,0.05);
@@ -78,8 +79,6 @@
             margin-right: 10px;
             border: 1px solid var(--border-color, #ccc);
             border-radius: 20px;
-            background: var(--input-bg, white);
-            color: var(--text-color, #333);
         }
         .message-input-area button {
             padding: 10px 20px;
@@ -89,14 +88,10 @@
             border-radius: 20px;
             cursor: pointer;
         }
-        .message-input-area button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
         .chat-header {
             padding: 15px;
             border-bottom: 1px solid var(--border-color, #ddd);
-            background: var(--card-bg, #f8f9fa);
+            background: #f8f9fa;
             font-weight: bold;
         }
         .delete-msg {
@@ -110,7 +105,7 @@
             cursor: pointer;
             margin-left: 10px;
         }
-        .loading {
+        .loading, .error {
             text-align: center;
             padding: 20px;
             color: #888;
@@ -132,7 +127,6 @@
     </style>
 </head>
 <body>
-    <!-- Navbar injected by common.js -->
     <nav class="navbar" id="navbar"></nav>
 
     <div class="container">
@@ -142,9 +136,9 @@
                 <div class="loading">Loading conversations...</div>
             </div>
             <div class="chat-area">
-                <div class="chat-header" id="chatHeader">Select a conversation</div>
+                <div class="chat-header" id="chatHeader">Select a recipient</div>
                 <div class="messages" id="messagesContainer">
-                    <div class="loading">No conversation selected</div>
+                    <div class="loading">No recipient selected</div>
                 </div>
                 <div class="message-input-area">
                     <input type="text" id="messageInput" placeholder="Type a message..." disabled>
@@ -156,19 +150,5 @@
 
     <script src="/js/common.js"></script>
     <script src="/js/chat.js"></script>
-    <script>
-        // Initialize the page for the logged-in user (doctor, hospital, or admin)
-        (async () => {
-            const user = await checkAuth();
-            if (!user) {
-                window.location.href = '/login.html';
-                return;
-            }
-            injectNavbar(user.role);
-            await initI18n();   // load language from backend
-            await initTheme();   // load theme from backend
-           
-        })();
-    </script>
 </body>
 </html>

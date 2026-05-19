@@ -1,3 +1,4 @@
+// doctor-profile.js
 async function loadProfile() {
     const user = await checkAuth();
     if (!user || user.role !== 'doctor') { window.location.href = '/login.html'; return; }
@@ -9,8 +10,10 @@ async function loadProfile() {
     document.getElementById('salaryExpectation').value = profile.salary_expectation || '';
     document.getElementById('phone').value = profile.phone || '';
     document.getElementById('bio').value = profile.bio || '';
+    if (profile.profile_photo) {
+        document.getElementById('profilePhotoPreview').src = '/' + profile.profile_photo;
+    }
 }
-loadProfile();
 
 document.getElementById('profileForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -23,31 +26,40 @@ document.getElementById('profileForm').addEventListener('submit', async (e) => {
         phone: document.getElementById('phone').value,
         bio: document.getElementById('bio').value
     };
-    try {
-        const res = await fetch('/api/doctor/profile', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(payload) });
-        if (res.ok) alert('Profile updated');
-        else alert('Update failed');
-    } catch(e) { alert('Error'); }
+    const res = await fetch('/api/doctor/profile', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(payload) });
+    if (res.ok) alert('Profile updated');
+    else alert('Update failed');
+});
+
+document.getElementById('photoForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    const fileInput = document.querySelector('#photoForm input[type="file"]');
+    if (!fileInput.files.length) return alert('Select a photo');
+    formData.append('photo', fileInput.files[0]);
+    const res = await fetch('/api/doctor/upload-photo', { method: 'POST', body: formData, credentials: 'include' });
+    if (res.ok) {
+        alert('Photo uploaded');
+        loadProfile();
+    } else alert('Upload failed');
 });
 
 document.getElementById('cvForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append('cv', document.querySelector('#cvForm input[type="file"]').files[0]);
-    try {
-        const res = await fetch('/api/doctor/upload-cv', { method: 'POST', body: formData, credentials: 'include' });
-        if (res.ok) alert('CV uploaded');
-        else alert('Upload failed');
-    } catch(e) { alert('Error'); }
+    const res = await fetch('/api/doctor/upload-cv', { method: 'POST', body: formData, credentials: 'include' });
+    if (res.ok) alert('CV uploaded');
+    else alert('Upload failed');
 });
 
 document.getElementById('licenseForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append('license', document.querySelector('#licenseForm input[type="file"]').files[0]);
-    try {
-        const res = await fetch('/api/doctor/upload-license', { method: 'POST', body: formData, credentials: 'include' });
-        if (res.ok) alert('License uploaded');
-        else alert('Upload failed');
-    } catch(e) { alert('Error'); }
+    const res = await fetch('/api/doctor/upload-license', { method: 'POST', body: formData, credentials: 'include' });
+    if (res.ok) alert('License uploaded');
+    else alert('Upload failed');
 });
+
+loadProfile();

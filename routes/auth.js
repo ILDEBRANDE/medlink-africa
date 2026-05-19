@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const db = require('../db');
 const router = express.Router();
 
-// ========== REGISTRATION (Doctor / Hospital) ==========
+// ========== REGISTRATION ==========
 router.post('/register', async (req, res) => {
     const { email, password, role, ...profileData } = req.body;
     try {
@@ -44,7 +44,7 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// ========== LOGIN (with admin first‑login detection) ==========
+// ========== LOGIN ==========
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -87,7 +87,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// ========== CHANGE DEFAULT PASSWORD (first login for admin) ==========
+// ========== CHANGE DEFAULT PASSWORD ==========
 router.post('/change-default-password', async (req, res) => {
     if (!req.session.userId) return res.status(401).json({ error: 'Not authenticated' });
     const { currentPassword, newPassword } = req.body;
@@ -105,6 +105,90 @@ router.post('/change-default-password', async (req, res) => {
         res.json({ message: 'Password changed. Please log in again.' });
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+});
+
+// ========== CHANGE USER ROLE (ADMIN ONLY) ==========
+router.put('/change-role/:userId', async (req, res) => {
+    // Check if the requester is admin (using session)
+    if (!req.session.userId) return res.status(401).json({ error: 'Not authenticated' });
+    const [adminUser] = await db.query('SELECT role FROM users WHERE id = ?', [req.session.userId]);
+    if (!adminUser.length || adminUser[0].role !== 'admin') {
+        return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const { userId } = req.params;
+    const { newRole } = req.body;
+    if (!['doctor', 'hospital'].includes(newRole)) {
+        return res.status(400).json({ error: 'Invalid role' });
+    }
+
+    const connection = await db.getConnection();
+    await connection.beginTransaction();
+
+    try {
+        const [user] = await connection.query('SELECT role FROM users WHERE id = ?', [userId]);
+        if (!user.length) return res.status(404).json({ error: 'User not found' });
+        const oldRole = user[0].role;
+
+        if (oldRole === newRole) {
+            return res.status(400).json({ error: 'User already has this role' });
+        }
+
+        // If old role is doctor, remove doctor profile and related data
+        if (oldRole === 'doctor') {
+            // Get doctor internal id
+            const [doctor] = await connection.query('SELECT id FROM doctors WHERE user_id = ?', [userId]);
+            if (doctor.length) {
+                // Delete applications
+                await connection.query('DELETE FROM applications WHERE doctor_id = ?', [doctor[0].id]);
+                // Delete doctor profile
+                await connection.query('DELETE FROM doctors WHERE user_id = ?', [userId]);
+            }
+        }
+
+        // If old role is hospital, remove hospital profile and related data
+        if (oldRole === 'hospital') {
+            // Get hospital internal id
+            const [hospital] = await connection.query('SELECT id FROM hospitals WHERE user_id = ?', [userId]);
+            if (hospital.length) {
+                // Delete jobs
+                await connection.query('DELETE FROM jobs WHERE hospital_id = ?', [hospital[0].id]);
+                // Delete hospital profile
+                await connection.query('DELETE FROM hospitals WHERE user_id = ?', [userId]);
+            }
+        }
+
+        // Update user role
+        await connection.query('UPDATE users SET role = ? WHERE id = ?', [newRole, userId]);
+
+        // Create new profile for the new role
+        if (newRole === 'doctor') {
+            await connection.query(`
+                INSERT INTO doctors (user_id, full_name, specialty, experience_years, location_pref, salary_expectation)
+                VALUES (?, 'New Doctor', 'General Practice', 0, 'both', NULL)
+            `, [userId]);
+        } else if (newRole === 'hospital') {
+            await connection.query(`
+                INSERT INTO hospitals (user_id, hospital_name, location, contact_phone, description)
+                VALUES (?, 'New Hospital', 'Unknown', NULL, NULL)
+            `, [userId]);
+        }
+
+        // Log the action
+        await connection.query(
+            'INSERT INTO system_logs (action, details) VALUES (?, ?)',
+            ['change_role', `Admin changed user ${userId} from ${oldRole} to ${newRole}`]
+        );
+
+        await connection.commit();
+        res.json({ message: `User role changed from ${oldRole} to ${newRole}`, newRole });
+    } catch (err) {
+        await connection.rollback();
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    } finally {
+        connection.release();
     }
 });
 

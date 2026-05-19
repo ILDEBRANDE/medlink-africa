@@ -1,5 +1,5 @@
 {
-  "app_name": "MedLink Afrika",
+  "app_name": "Medical recruitment",
   "home": "Nyumbani",
   "login": "Ingia",
   "register": "Jisajili",
@@ -10,6 +10,23 @@
   "messages": "Ujumbe",
   "notifications": "Arifa",
   "settings": "Mipangilio",
+  
+  "other_applicants": "Waombaji Wengine",
+  "view_other_applicants": "Tazama Waombaji Wengine",
+  "no_other_applicants": "Hakuna waombaji wengine",
+  "message": "Ujumbe",
+
+  "view_interview_details": "Tazama Maelezo ya Mahojiano",
+  "your_application_status": "Hali ya Ombi Lako",
+  "rejection_reason": "Sababu ya Kukataliwa",
+"upload_photo": "Pakia Picha",
+  "view_all_applicants": "Tazama Waombaji Wote",
+  "no_applicants": "Hakuna waombaji",
+
+  "your_application_status": "Hali ya Ombi Lako",
+  "rejection_reason": "Sababu ya Kukataliwa",
+
+  "view_interview_details": "Tazama Maelezo ya Mahojiano",
   "welcome": "Karibu",
   "doctor_dashboard": "Dashibodi ya Daktari",
   "hospital_dashboard": "Dashibodi ya Hospitali",

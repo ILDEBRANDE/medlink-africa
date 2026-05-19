@@ -6,53 +6,23 @@
     <title data-i18n="system_settings">System Settings</title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        /* Base styles using CSS variables for dynamic theming */
-        :root {
-            --primary-color: #3498db;
-            --primary-hover: #2980b9;
-        }
-        body {
-            background: var(--bg-color, #f4f4f4);
-            color: var(--text-color, #333);
-        }
-        /* Global overrides for buttons and interactive elements */
-        button, .btn-primary, .btn-success, .tab-btn, .map-btn, .view-btn, .delete-btn {
-            background-color: var(--primary-color) !important;
-        }
-        button:hover, .btn-primary:hover, .tab-btn:hover {
-            background-color: var(--primary-hover, var(--primary-color)) !important;
-        }
-        .settings-container {
-            max-width: 800px;
-            margin: 30px auto;
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
+        .settings-container { max-width: 800px; margin: 30px auto; background: white; border-radius: 10px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         body.dark .settings-container { background: #16213e; }
         body.blue .settings-container { background: #1e3a5f; }
         body.green .settings-container { background: #1b4d2e; }
         .settings-group { margin-bottom: 25px; border-bottom: 1px solid #ddd; padding-bottom: 15px; }
         .setting-row { margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
         .setting-row label { font-weight: bold; min-width: 200px; }
-        select, input[type="text"], input[type="email"], input[type="password"] {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            flex: 1;
-            margin-left: 10px;
-            background: white;
-        }
-        input[type="color"] { width: 60px; height: 40px; margin-left: 10px; cursor: pointer; }
-        button { background: var(--primary-color); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin: 5px; }
-        .btn-danger { background: #e74c3c !important; }
-        .btn-danger:hover { background: #c0392b !important; }
+        select, input { padding: 8px; border-radius: 5px; border: 1px solid #ccc; flex: 1; margin-left: 10px; background: white; }
+        button { background: #3498db; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        .btn-danger { background: #e74c3c; }
+        .btn-success { background: #2ecc71; }
         .message { margin: 10px 0; padding: 10px; border-radius: 5px; display: none; }
-        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; padding: 10px; border-radius: 5px; }
-        body.dark select, body.dark input { background: #2c3e50; color: white; border-color: #555; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; padding: 10px; border-radius: 5px; }
+        .profile-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; }
+        .photo-container { text-align: center; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -62,200 +32,79 @@
             <h2 data-i18n="system_settings">System Settings</h2>
             <div id="message" class="message"></div>
 
-            <!-- Language -->
-            <div class="settings-group">
-                <h3 data-i18n="language">Language</h3>
-                <div class="setting-row">
-                    <label data-i18n="choose_language">Choose language:</label>
-                    <select id="languageSelect">
-                        <option value="en">English</option>
-                        <option value="rw">Kinyarwanda</option>
-                        <option value="fr">Français</option>
-                        <option value="sw">Kiswahili</option>
-                    </select>
-                </div>
+            <div class="photo-container">
+                <img id="profilePhotoPreview" class="profile-photo" src="/uploads/photos/default.png" alt="Admin Photo">
+                <form id="photoForm" enctype="multipart/form-data">
+                    <input type="file" name="photo" accept="image/*">
+                    <button type="submit" data-i18n="upload_photo">Upload Photo</button>
+                </form>
             </div>
 
-            <!-- Theme & Custom Color -->
-            <div class="settings-group">
-                <h3 data-i18n="theme">Theme & Color</h3>
-                <div class="setting-row">
-                    <label data-i18n="select_theme">Select theme:</label>
-                    <select id="themeSelect">
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
-                        <option value="blue">Blue</option>
-                        <option value="green">Green</option>
-                        <option value="custom">Custom Color</option>
-                    </select>
-                </div>
-                <div class="setting-row" id="customColorRow" style="display: none;">
-                    <label>Pick your custom color:</label>
-                    <input type="color" id="customColorPicker" value="#3498db">
-                </div>
+            <div class="settings-group"><h3 data-i18n="language">Language</h3>
+                <div class="setting-row"><label data-i18n="choose_language">Choose language:</label><select id="languageSelect"><option value="en">English</option><option value="rw">Kinyarwanda</option><option value="fr">Français</option><option value="sw">Kiswahili</option></select></div>
             </div>
 
-            <!-- Admin Account -->
-            <div class="settings-group">
-                <h3 data-i18n="admin_account">Admin Account</h3>
+            <div class="settings-group"><h3 data-i18n="theme">Theme</h3>
+                <div class="setting-row"><label data-i18n="select_theme">Select theme:</label><select id="themeSelect"><option value="light">Light</option><option value="dark">Dark</option><option value="blue">Blue</option><option value="green">Green</option></select></div>
+            </div>
+
+            <div class="settings-group"><h3 data-i18n="admin_account">Admin Account</h3>
                 <div class="setting-row"><label data-i18n="email">Email:</label><input type="email" id="adminEmail"></div>
                 <div class="setting-row"><label data-i18n="current_password">Current password:</label><input type="password" id="currentPassword"></div>
                 <div class="setting-row"><label data-i18n="new_password">New password:</label><input type="password" id="newPassword"></div>
                 <div class="setting-row"><label data-i18n="confirm_password">Confirm password:</label><input type="password" id="confirmPassword"></div>
-                <div><button id="updateEmailBtn" data-i18n="update_email">Update Email</button><button id="updatePasswordBtn" data-i18n="change_password">Change Password</button><button id="deleteAccountBtn" class="btn-danger" data-i18n="delete_account">Delete Account</button></div>
+                <button id="updateEmailBtn" data-i18n="update_email">Update Email</button>
+                <button id="updatePasswordBtn" data-i18n="change_password">Change Password</button>
+                <button id="deleteAccountBtn" class="btn-danger" data-i18n="delete_account">Delete Account</button>
             </div>
 
-            <!-- System Information -->
             <div class="settings-group"><h3 data-i18n="system_info">System Information</h3><div id="sysInfo" class="info">Loading...</div></div>
             <div class="settings-group"><h3 data-i18n="system_actions">System Actions</h3><button id="backupBtn" data-i18n="create_backup">Create Backup</button><button id="cleanupBtn" data-i18n="clean_jobs">Clean Old Jobs</button><button id="refreshInfoBtn" data-i18n="refresh">Refresh Info</button></div>
             <button id="saveSettingsBtn" class="btn-success" data-i18n="save_settings">Save Settings</button>
         </div>
     </div>
-
     <script src="/js/common.js"></script>
     <script>
-        function showMessage(msg, type) {
-            const msgDiv = document.getElementById('message');
-            msgDiv.textContent = msg;
-            msgDiv.className = `message ${type}`;
-            msgDiv.style.display = 'block';
-            setTimeout(() => msgDiv.style.display = 'none', 5000);
-        }
-
-        // Show/hide custom color picker based on theme selection
-        const themeSelect = document.getElementById('themeSelect');
-        const customRow = document.getElementById('customColorRow');
-        themeSelect.addEventListener('change', function() {
-            customRow.style.display = this.value === 'custom' ? 'flex' : 'none';
-        });
-
+        function showMessage(msg, type) { const d = document.getElementById('message'); d.textContent = msg; d.className = `message ${type}`; d.style.display = 'block'; setTimeout(() => d.style.display = 'none', 5000); }
+        function applyTheme(theme) { document.body.className = theme; }
+        
         async function loadAdminSettings() {
             const res = await fetch('/api/admin/admin-settings', { credentials: 'include' });
             if (res.ok) {
                 const data = await res.json();
                 document.getElementById('languageSelect').value = data.language || 'en';
-                themeSelect.value = data.theme || 'light';
-                if (data.theme === 'custom' && data.customColor) {
-                    document.getElementById('customColorPicker').value = data.customColor;
-                    customRow.style.display = 'flex';
-                    applyTheme('custom', data.customColor);
-                } else {
-                    applyTheme(data.theme || 'light');
-                }
+                document.getElementById('themeSelect').value = data.theme || 'light';
+                applyTheme(data.theme || 'light');
+                if (data.profile_photo) document.getElementById('profilePhotoPreview').src = '/' + data.profile_photo;
             }
         }
-
-        async function loadAdminEmail() {
-            const user = await checkAuth();
-            if (user) document.getElementById('adminEmail').value = user.email;
-        }
-
+        async function loadAdminEmail() { const user = await checkAuth(); if (user) document.getElementById('adminEmail').value = user.email; }
         async function loadSystemInfo() {
-            try {
-                const statsRes = await fetch('/api/admin/stats', { credentials: 'include' });
-                const stats = await statsRes.json();
-                const healthRes = await fetch('/api/admin/health-check', { credentials: 'include' });
-                const health = await healthRes.json();
-                const uptimeHours = Math.floor(health.uptime / 3600);
-                const uptimeMins = Math.floor((health.uptime % 3600) / 60);
-                document.getElementById('sysInfo').innerHTML = `
-                    <strong data-i18n="doctors">Doctors:</strong> ${stats.doctors} &nbsp;|&nbsp;
-                    <strong data-i18n="hospitals">Hospitals:</strong> ${stats.hospitals} &nbsp;|&nbsp;
-                    <strong data-i18n="jobs">Jobs:</strong> ${stats.jobs} &nbsp;|&nbsp;
-                    <strong data-i18n="applications">Applications:</strong> ${stats.applications}<br>
-                    <strong data-i18n="rural_jobs">Rural Jobs:</strong> ${stats.ruralJobs} &nbsp;|&nbsp;
-                    <strong data-i18n="urban_jobs">Urban Jobs:</strong> ${stats.urbanJobs}<br>
-                    <strong>Uptime:</strong> ${uptimeHours}h ${uptimeMins}m &nbsp;|&nbsp;
-                    <strong>Server Time:</strong> ${new Date(health.timestamp).toLocaleString()}
-                `;
-                applyTranslations();
-            } catch (err) {
-                document.getElementById('sysInfo').innerHTML = 'Error loading system info';
-                console.error(err);
-            }
+            const stats = await (await fetch('/api/admin/stats', { credentials: 'include' })).json();
+            const health = await (await fetch('/api/admin/health-check', { credentials: 'include' })).json();
+            document.getElementById('sysInfo').innerHTML = `Doctors: ${stats.doctors} | Hospitals: ${stats.hospitals} | Jobs: ${stats.jobs} | Applications: ${stats.applications}<br>Rural: ${stats.ruralJobs} | Urban: ${stats.urbanJobs}<br>Uptime: ${Math.floor(health.uptime/3600)}h ${Math.floor((health.uptime%3600)/60)}m`;
         }
-
         async function saveSettings() {
-            const language = document.getElementById('languageSelect').value;
-            const theme = themeSelect.value;
-            let customColor = null;
-            if (theme === 'custom') customColor = document.getElementById('customColorPicker').value;
-            const res = await fetch('/api/admin/admin-settings', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ language, theme, customColor, timezone: 'Africa/Kigali' })
-            });
-            if (res.ok) {
-                if (theme === 'custom') applyTheme('custom', customColor);
-                else applyTheme(theme);
-                showMessage('Settings saved! Page will reload.', 'success');
-                setTimeout(() => location.reload(), 1000);
-            } else {
-                showMessage('Failed to save settings', 'error');
-            }
-        }
-
-        async function updateEmail() {
-            const email = document.getElementById('adminEmail').value;
-            if (!email) return showMessage('Email required', 'error');
-            const res = await fetch('/api/admin/admin-email', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ email })
-            });
-            if (res.ok) showMessage('Email updated', 'success');
+            const language = document.getElementById('languageSelect').value, theme = document.getElementById('themeSelect').value;
+            const res = await fetch('/api/admin/admin-settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ language, theme, timezone: 'Africa/Kigali' }) });
+            if (res.ok) { applyTheme(theme); showMessage('Settings saved! Page will reload.', 'success'); setTimeout(() => location.reload(), 1000); }
             else showMessage('Failed', 'error');
         }
-
-        async function updatePassword() {
-            const current = document.getElementById('currentPassword').value;
-            const newPwd = document.getElementById('newPassword').value;
-            const confirm = document.getElementById('confirmPassword').value;
-            if (!current || !newPwd) return showMessage('Fill all fields', 'error');
-            if (newPwd !== confirm) return showMessage('Passwords do not match', 'error');
-            const res = await fetch('/api/admin/admin-password', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ currentPassword: current, newPassword: newPwd })
-            });
-            if (res.ok) {
-                showMessage('Password changed', 'success');
-                document.getElementById('currentPassword').value = '';
-                document.getElementById('newPassword').value = '';
-                document.getElementById('confirmPassword').value = '';
-            } else {
-                const err = await res.json();
-                showMessage(err.error || 'Failed', 'error');
-            }
-        }
-
-        async function deleteAccount() {
-            if (!confirm('⚠️ Permanently delete your admin account?')) return;
-            const res = await fetch('/api/admin/admin-account', { method: 'DELETE', credentials: 'include' });
-            if (res.ok) {
-                alert('Account deleted. You will be logged out.');
-                window.location.href = '/';
-            } else showMessage('Failed', 'error');
-        }
-
-        async function createBackup() {
-            const res = await fetch('/api/admin/backup', { method: 'POST', credentials: 'include' });
-            const data = await res.json();
-            if (res.ok) showMessage(`Backup created: ${data.file}`, 'success');
-            else showMessage('Backup failed', 'error');
-        }
-
-        async function cleanupOldJobs() {
-            if (!confirm('Delete closed jobs older than 30 days?')) return;
-            const res = await fetch('/api/admin/cleanup-old-jobs', { method: 'POST', credentials: 'include' });
-            const data = await res.json();
-            if (res.ok) { showMessage(data.message, 'success'); loadSystemInfo(); }
-            else showMessage('Failed', 'error');
-        }
-
+        async function updateEmail() { const email = document.getElementById('adminEmail').value; const res = await fetch('/api/admin/admin-email', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ email }) }); if (res.ok) showMessage('Email updated', 'success'); else showMessage('Failed', 'error'); }
+        async function updatePassword() { showMessage('Password change not implemented', 'error'); }
+        async function deleteAccount() { if (confirm('Delete admin account?')) { await fetch('/api/admin/admin-account', { method: 'DELETE', credentials: 'include' }); window.location.href = '/'; } }
+        async function createBackup() { const res = await fetch('/api/admin/backup', { method: 'POST', credentials: 'include' }); const data = await res.json(); showMessage(data.message, 'success'); }
+        async function cleanupOldJobs() { if (confirm('Delete closed jobs older than 30 days?')) { const res = await fetch('/api/admin/cleanup-old-jobs', { method: 'POST', credentials: 'include' }); const data = await res.json(); showMessage(data.message, 'success'); loadSystemInfo(); } }
+        
+        document.getElementById('photoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('photo', document.querySelector('#photoForm input[type="file"]').files[0]);
+            const res = await fetch('/api/admin/upload-photo', { method: 'POST', body: formData, credentials: 'include' });
+            if (res.ok) { alert('Photo uploaded'); location.reload(); }
+            else alert('Upload failed');
+        });
+        
         document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
         document.getElementById('updateEmailBtn').addEventListener('click', updateEmail);
         document.getElementById('updatePasswordBtn').addEventListener('click', updatePassword);

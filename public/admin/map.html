@@ -2,29 +2,285 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title data-i18n="hospital_map">Hospital Map</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="hospital_map">Hospital Map - Medical Recruitment</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <style>#map { height: 500px; margin-top: 20px; }</style>
+    <style>
+        .map-container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .map-header {
+            background: var(--card-bg, white);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .map-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .map-wrapper {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .map-section {
+            flex: 2;
+            min-width: 300px;
+        }
+        .list-section {
+            flex: 1;
+            min-width: 280px;
+            background: var(--card-bg, white);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        #map {
+            height: 500px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .list-header {
+            background: var(--primary-color, #3498db);
+            color: white;
+            padding: 12px 15px;
+            font-weight: bold;
+        }
+        .hospital-list {
+            max-height: 455px;
+            overflow-y: auto;
+        }
+        .hospital-list-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color, #eee);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .hospital-list-item:hover {
+            background: rgba(52, 152, 219, 0.1);
+        }
+        .hospital-list-item.selected {
+            background: var(--primary-color, #3498db);
+            color: white;
+        }
+        .hospital-list-item strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+        .hospital-list-item small {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        .stats-card {
+            background: var(--card-bg, white);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .back-btn {
+            background: var(--primary-color, #3498db);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        .back-btn:hover {
+            background: var(--primary-hover, #2980b9);
+        }
+        .coords-text {
+            font-size: 11px;
+            color: #888;
+            margin-top: 4px;
+        }
+        .selected .coords-text {
+            color: rgba(255,255,255,0.8);
+        }
+        @media (max-width: 768px) {
+            .map-wrapper {
+                flex-direction: column;
+            }
+            .map-section, .list-section {
+                width: 100%;
+            }
+            #map {
+                height: 350px;
+            }
+            .hospital-list {
+                max-height: 250px;
+            }
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar" id="navbar"></nav>
-    <div class="container">
-        <h2 data-i18n="hospital_map">Hospital Map</h2>
-        <div id="map"></div>
+
+    <div class="map-container">
+        <div class="map-header">
+            <h2 data-i18n="hospital_map">📍 Hospital Locations</h2>
+            <button class="back-btn" onclick="window.history.back()" data-i18n="back">← Back</button>
+        </div>
+
+        <div class="map-wrapper">
+            <div class="map-section">
+                <div id="map">
+                    <div class="loading" data-i18n="loading">Loading map...</div>
+                </div>
+                <div class="stats-card" id="statsCard">
+                    <span id="hospitalsCount">Loading hospitals...</span>
+                </div>
+            </div>
+
+            <div class="list-section">
+                <div class="list-header" data-i18n="hospitals_list">🏥 Hospitals</div>
+                <div class="hospital-list" id="hospitalsListContainer">
+                    <div class="loading">Loading...</div>
+                </div>
+            </div>
+        </div>
     </div>
+
     <script src="/js/common.js"></script>
     <script>
         let map;
-        async function initMap() {
-            const res = await fetch('/api/admin/hospital-locations', { credentials: 'include' });
-            const hospitals = await res.json();
-            map = L.map('map').setView([-1.9403, 29.8739], 7);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map);
-            hospitals.forEach(h => { L.marker([h.latitude, h.longitude]).addTo(map).bindPopup(`<b>${escapeHtml(h.hospital_name)}</b><br>${escapeHtml(h.location)}`); });
+        let markers = [];
+        let hospitalsData = [];
+
+        function getHospitalIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('hospitalId');
         }
-        (async () => { await initAdminPanel(); await initMap(); })();
+
+        async function loadHospitalMap() {
+            try {
+                const res = await fetch('/api/admin/hospital-locations', { credentials: 'include' });
+                if (!res.ok) throw new Error('Failed to load hospitals');
+                hospitalsData = await res.json();
+                
+                const countElem = document.getElementById('hospitalsCount');
+                countElem.innerHTML = `<strong>${hospitalsData.length}</strong> hospitals have location data`;
+                applyTranslations();
+
+                const listContainer = document.getElementById('hospitalsListContainer');
+                if (hospitalsData.length === 0) {
+                    listContainer.innerHTML = '<div style="padding:15px; text-align:center;">No hospitals have set their location yet.</div>';
+                    document.getElementById('map').innerHTML = '<div class="loading">No hospitals to display on map</div>';
+                    return;
+                }
+
+                // Initialize map
+                if (map) map.remove();
+                map = L.map('map').setView([-1.9403, 29.8739], 7);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+
+                // Add markers and build list
+                let listHtml = '';
+                let hospitalIdFromUrl = getHospitalIdFromUrl();
+                
+                hospitalsData.forEach(hospital => {
+                    const lat = hospital.latitude || -1.9403;
+                    const lng = hospital.longitude || 29.8739;
+                    
+                    // Add marker
+                    const marker = L.marker([lat, lng]).addTo(map);
+                    marker.bindPopup(`
+                        <strong>${escapeHtml(hospital.hospital_name)}</strong><br>
+                        📍 ${escapeHtml(hospital.location || 'No address')}
+                    `);
+                    marker.hospitalId = hospital.id;
+                    markers.push(marker);
+                    
+                    // Add to list
+                    const isSelected = hospitalIdFromUrl && hospital.id == hospitalIdFromUrl;
+                    listHtml += `
+                        <div class="hospital-list-item" data-hospital-id="${hospital.id}" onclick="zoomToHospital(${hospital.id})" ${isSelected ? 'style="background: var(--primary-color, #3498db); color: white;"' : ''}>
+                            <strong>${escapeHtml(hospital.hospital_name)}</strong>
+                            <small>📍 ${escapeHtml(hospital.location || 'Address not set')}</small>
+                            ${hospital.latitude && hospital.longitude ? `<div class="coords-text">📌 ${hospital.latitude.toFixed(4)}, ${hospital.longitude.toFixed(4)}</div>` : '<div class="coords-text">📍 No coordinates</div>'}
+                        </div>
+                    `;
+                });
+                listContainer.innerHTML = listHtml;
+                applyTranslations();
+
+                // If hospitalId in URL, zoom to that hospital
+                if (hospitalIdFromUrl) {
+                    const targetHospital = hospitalsData.find(h => h.id == hospitalIdFromUrl);
+                    if (targetHospital) {
+                        setTimeout(() => zoomToHospital(targetHospital.id), 300);
+                    }
+                } else if (markers.length > 0) {
+                    const bounds = L.latLngBounds(markers.map(m => m.getLatLng()));
+                    map.fitBounds(bounds);
+                }
+            } catch (err) {
+                console.error('Map error:', err);
+                document.getElementById('map').innerHTML = '<div class="error-message">Error loading map. Please refresh.</div>';
+                document.getElementById('hospitalsListContainer').innerHTML = '<div class="error-message">Error loading hospitals.</div>';
+            }
+        }
+
+        function zoomToHospital(hospitalId) {
+            const hospital = hospitalsData.find(h => h.id == hospitalId);
+            if (!hospital) return;
+            
+            const lat = hospital.latitude || -1.9403;
+            const lng = hospital.longitude || 29.8739;
+            
+            map.setView([lat, lng], 15);
+            
+            const marker = markers.find(m => m.hospitalId == hospitalId);
+            if (marker) marker.openPopup();
+            
+            document.querySelectorAll('.hospital-list-item').forEach(item => {
+                item.classList.remove('selected');
+                if (item.getAttribute('data-hospital-id') == hospitalId) {
+                    item.classList.add('selected');
+                    item.style.background = 'var(--primary-color, #3498db)';
+                    item.style.color = 'white';
+                } else {
+                    item.style.background = '';
+                    item.style.color = '';
+                }
+            });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+        }
+
+        (async () => {
+            await initAdminPanel();
+            await loadHospitalMap();
+        })();
     </script>
 </body>
 </html>

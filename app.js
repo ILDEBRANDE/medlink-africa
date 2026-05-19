@@ -7,8 +7,8 @@ require('dotenv').config();
 
 const app = express();
 
-// Create upload directories
-['uploads', 'uploads/cvs', 'uploads/licenses'].forEach(dir => {
+// Create upload directories if they don't exist
+['uploads', 'uploads/cvs', 'uploads/licenses', 'uploads/photos'].forEach(dir => {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
@@ -22,7 +22,7 @@ app.use('/locales', express.static('public/locales'));
 
 // Session configuration
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'medical_recruitment_secret_key',
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
@@ -59,7 +59,13 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Server error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`MedLink Africa running on http://localhost:${PORT}`);
+    console.log(`Medical Recruitment running on http://localhost:${PORT}`);
 });

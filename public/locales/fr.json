@@ -1,10 +1,26 @@
 {
-  "app_name": "MedLink Afrique",
+  "app_name": "Medicale recruitment",
   "home": "Accueil",
   "login": "Connexion",
   "register": "S'inscrire",
   "logout": "Déconnexion",
   "dashboard": "Tableau de bord",
+  
+  "other_applicants": "Autres candidats",
+  "view_other_applicants": "Voir les autres candidats",
+  "no_other_applicants": "Aucun autre candidat",
+  "message": "Message",
+"upload_photo": "Télécharger une phot",
+  "view_all_applicants": "Voir tous les candidats",
+  "no_applicants": "Aucun candidat",
+
+  "your_application_status": "Statut de votre candidature",
+  "rejection_reason": "Motif du rejet",
+
+  "view_interview_details": "Voir les détails de l'entretien",
+  "your_application_status": "Statut de votre candidature",
+  "rejection_reason": "Motif du rejet",
+  "view_interview_details": "Voir les détails de l'entretien",
   "profile": "Profil",
   "find_jobs": "Trouver un emploi",
   "messages": "Messages",

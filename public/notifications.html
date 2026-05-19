@@ -6,6 +6,9 @@
     <title data-i18n="notifications">Notifications</title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
+        .notif-list {
+            margin-top: 20px;
+        }
         .notif-item {
             padding: 15px;
             border-bottom: 1px solid var(--border-color, #eee);
@@ -14,13 +17,34 @@
             align-items: center;
             transition: background 0.2s;
         }
-        .notif-item:hover { background: rgba(0,0,0,0.02); }
-        .notif-item.unread { background: #f0f8ff; font-weight: bold; }
-        .notif-content { flex: 1; }
-        .notif-title { font-weight: bold; margin-bottom: 5px; }
-        .notif-message { margin-bottom: 5px; color: #555; }
-        body.dark .notif-message { color: #ccc; }
-        .notif-time { font-size: 12px; color: #888; }
+        .notif-item:hover {
+            background: rgba(0,0,0,0.02);
+        }
+        .notif-item.unread {
+            background: #f0f8ff;
+            font-weight: bold;
+        }
+        body.dark .notif-item.unread {
+            background: #1a3a5f;
+        }
+        .notif-content {
+            flex: 1;
+        }
+        .notif-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .notif-message {
+            margin-bottom: 5px;
+            color: #555;
+        }
+        body.dark .notif-message {
+            color: #ccc;
+        }
+        .notif-time {
+            font-size: 12px;
+            color: #888;
+        }
         .delete-notif {
             background: #e74c3c;
             color: white;
@@ -30,11 +54,36 @@
             cursor: pointer;
             margin-left: 10px;
         }
-        .delete-notif:hover { background: #c0392b; }
-        .empty-message { text-align: center; padding: 40px; color: #888; font-style: italic; }
+        .delete-notif:hover {
+            background: #c0392b;
+        }
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+            font-style: italic;
+        }
+        .mark-all-read {
+            background: var(--primary-color, #3498db);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        .mark-all-read:hover {
+            background: var(--primary-hover, #2980b9);
+        }
         @media (max-width: 768px) {
-            .notif-item { flex-direction: column; align-items: flex-start; }
-            .delete-notif { margin-top: 10px; align-self: flex-end; }
+            .notif-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .delete-notif {
+                margin-top: 10px;
+                align-self: flex-end;
+            }
         }
     </style>
 </head>
@@ -42,69 +91,12 @@
     <nav class="navbar" id="navbar"></nav>
     <div class="container">
         <h2 data-i18n="notifications">Notifications</h2>
-        <div id="notifList" class="notif-list"><div class="empty-message" data-i18n="loading">Loading...</div></div>
+       
+        <div id="notifList" class="notif-list">
+            <div class="empty-message" data-i18n="loading">Loading...</div>
+        </div>
     </div>
     <script src="/js/common.js"></script>
-    <script>
-        async function loadNotifications() {
-            const container = document.getElementById('notifList');
-            try {
-                const res = await fetch('/api/notifications', { credentials: 'include' });
-                if (!res.ok) throw new Error('Failed to fetch');
-                const notifs = await res.json();
-                container.innerHTML = '';
-                if (notifs.length === 0) {
-                    container.innerHTML = '<div class="empty-message" data-i18n="no_notifications">No notifications</div>';
-                    applyTranslations();
-                    return;
-                }
-                notifs.forEach(notif => {
-                    const div = document.createElement('div');
-                    div.className = `notif-item ${!notif.is_read ? 'unread' : ''}`;
-                    div.innerHTML = `
-                        <div class="notif-content">
-                            <div class="notif-title">${escapeHtml(notif.title)}</div>
-                            <div class="notif-message">${escapeHtml(notif.message)}</div>
-                            <div class="notif-time">${new Date(notif.created_at).toLocaleString()}</div>
-                        </div>
-                        <button class="delete-notif" data-id="${notif.id}" data-i18n="delete">Delete</button>
-                    `;
-                    container.appendChild(div);
-                    if (!notif.is_read) fetch(`/api/notifications/${notif.id}/read`, { method: 'PUT', credentials: 'include' });
-                });
-                document.querySelectorAll('.delete-notif').forEach(btn => {
-                    btn.addEventListener('click', () => deleteNotification(btn.getAttribute('data-id')));
-                });
-                applyTranslations();
-            } catch(err) {
-                console.error(err);
-                container.innerHTML = '<div class="empty-message" data-i18n="error_loading">Error loading notifications.</div>';
-                applyTranslations();
-            }
-        }
-
-        async function deleteNotification(notifId) {
-            if (!confirm('Delete this notification?')) return;
-            try {
-                const res = await fetch(`/api/notifications/${notifId}`, { method: 'DELETE', credentials: 'include' });
-                if (res.ok) loadNotifications();
-                else alert('Failed to delete');
-            } catch(err) { alert('Network error'); }
-        }
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
-        }
-
-        (async () => {
-            const user = await checkAuth();
-            if (!user) { window.location.href = '/login.html'; return; }
-            injectNavbar(user.role);
-            await initI18n();
-            await initTheme();
-            await loadNotifications();
-        })();
-    </script>
+    <script src="/js/notifications.js"></script>
 </body>
 </html>

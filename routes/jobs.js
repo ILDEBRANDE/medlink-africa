@@ -36,11 +36,11 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Hospital creates job (with notification to matching doctors AND admin)
+// Hospital creates job (with notification to matching doctors and admin)
 router.post('/', requireAuth, requireRole(['hospital']), async (req, res) => {
     const { title, description, specialty_required, location_type, salary_range } = req.body;
     try {
-        const [hospital] = await db.query('SELECT id FROM hospitals WHERE user_id = ?', [req.session.userId]);
+        const [hospital] = await db.query('SELECT id, user_id FROM hospitals WHERE user_id = ?', [req.session.userId]);
         if (hospital.length === 0) {
             return res.status(404).json({ error: 'Hospital profile not found' });
         }
@@ -58,17 +58,22 @@ router.post('/', requireAuth, requireRole(['hospital']), async (req, res) => {
             FROM doctors d
             WHERE d.specialty = ? OR d.location_pref = ? OR d.location_pref = 'both'
         `, [specialty_required, location_type]);
+
         for (const doctor of matchingDoctors) {
-            await createNotification(doctor.user_id, 'New Job Match', `A new "${title}" position (${location_type}) matching your profile has been posted.`);
+            await createNotification(
+                doctor.user_id,
+                'New Job Match',
+                `A new "${title}" position (${location_type}) matching your profile has been posted.`
+            );
         }
 
         // ----- Notify admin -----
         const [admin] = await db.query("SELECT id FROM users WHERE role = 'admin' LIMIT 1");
         if (admin.length) {
-            await db.query(
-                'INSERT INTO admin_notifications (admin_user_id, hospital_id, action_type, details) VALUES (?, ?, ?, ?)',
-                [admin[0].id, hospital[0].id, 'post_job', `Posted new job: ${title}`]
-            );
+            await db.query(`
+                INSERT INTO admin_notifications (admin_user_id, hospital_id, action_type, details) 
+                VALUES (?, ?, 'post_job', ?)
+            `, [admin[0].id, hospital[0].id, `Posted new job: ${title}`]);
         }
 
         res.status(201).json({ message: 'Job posted successfully', jobId });

@@ -3,14 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedLink Africa - Connecting Doctors & Hospitals</title>
+    <title>Medical Recruitment - Connecting Healthcare Professionals</title>
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Hero section with background image */
+        .hero {
+            background-image: url(images/healthcare-bb.jpg);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white;
+            padding: 120px 0;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        .hero-buttons .btn {
+            margin: 0 10px;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+        }
+        .features {
+            padding: 80px 0;
+            background: #f9f9f9;
+        }
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            .hero p {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="container">
             <div class="logo">
-                <h1>MedLink Africa</h1>
+                <h1>Medical Recruitment</h1>
             </div>
             <div class="nav-links">
                 <a href="/">Home</a>
@@ -20,10 +69,11 @@
         </div>
     </nav>
 
+    <!-- Hero Section with Background Image -->
     <header class="hero">
         <div class="container">
-            <h1>Connecting Healthcare Professionals Across East Africa</h1>
-            <p>Empowering doctors and hospitals in Rwanda, Kenya, Uganda, and Tanzania</p>
+            <h1>Connecting Healthcare Professionals and Doctors Across East Africa</h1>
+            <p>Powering doctors and hospitals in Rwanda, Kenya, Uganda, Burundi and Tanzania</p>
             <div class="hero-buttons">
                 <a href="/register.html" class="btn btn-primary">Get Started</a>
                 <a href="/login.html" class="btn btn-secondary">Login</a>
@@ -31,6 +81,7 @@
         </div>
     </header>
 
+    <!-- Features Section -->
     <section class="features">
         <div class="container">
             <h2>Platform Features</h2>
@@ -48,11 +99,20 @@
                 <div class="feature-card">
                     <h3>For Hospitals</h3>
                     <ul>
-                        <li>Post job vacancies</li>
+                        <li>Post job avairable</li>
                         <li>Search and filter candidates</li>
-                        <li>view matching</li>
+                        <li>powered matching</li>
                         <li>Schedule interviews</li>
-                        <li>Shortlist top talent</li>
+                        
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>For Admin</h3>
+                    <ul>
+                        <li>Manage users and content</li>
+                        <li>View system statistics</li>
+                        <li>Send broadcast notifications</li>
+                        <li>Export reports as PDF</li>
                     </ul>
                 </div>
             </div>
@@ -61,7 +121,8 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2026 MedLink Africa. Improving healthcare access across East Africa.</p>
+            <p>&copy; 2026 Medical Recruitment. Improving healthcare access across East Africa.</p>
+        <h2>powered by Ildebrande TWAHUJUMUTIMA</h2>
         </div>
     </footer>
 </body>

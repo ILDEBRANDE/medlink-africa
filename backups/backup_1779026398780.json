@@ -1,0 +1,428 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "admin@gmail.com",
+      "password_hash": "$2b$10$U3ZYoVD.fKl1kd/ynTtwleG3Hx8zuKIAJLQHMq2RmxchlcZOv832C",
+      "role": "admin",
+      "language": "en",
+      "created_at": "2026-05-16T14:27:50.000Z",
+      "must_change_password": 0
+    },
+    {
+      "id": 10,
+      "email": "doctor@gmail.com",
+      "password_hash": "$2b$10$0ojv52fiLWcnBpKo5FqH/uipE7qo56O9uNRnZ.LVjekO9JupXmJbu",
+      "role": "doctor",
+      "language": "en",
+      "created_at": "2026-05-16T18:20:11.000Z",
+      "must_change_password": 0
+    },
+    {
+      "id": 11,
+      "email": "hospital@gmail.com",
+      "password_hash": "$2b$10$3OJA9Q2tKXRC6MTpzvo3t.TQhNYGiOSZriGaVa5xR6vIz/k9izxnK",
+      "role": "hospital",
+      "language": "en",
+      "created_at": "2026-05-16T18:21:22.000Z",
+      "must_change_password": 0
+    }
+  ],
+  "doctors": [
+    {
+      "id": 4,
+      "user_id": 10,
+      "full_name": "doctor",
+      "specialty": "General Practice",
+      "experience_years": 10,
+      "location_pref": "rural",
+      "salary_expectation": "0.00",
+      "cv_path": "uploads\\cvs\\cv-1778956422151-584267854.pdf",
+      "license_path": "uploads\\licenses\\license-1778956408550-403069834.pdf",
+      "bio": "no get",
+      "phone": "0795494494",
+      "created_at": "2026-05-16T18:20:11.000Z",
+      "updated_at": "2026-05-17T13:12:02.000Z",
+      "profile_photo": "uploads\\photos\\photo-1779023521997-128724022.jpg"
+    }
+  ],
+  "hospitals": [
+    {
+      "id": 5,
+      "user_id": 11,
+      "hospital_name": "byumba",
+      "location": "byumba",
+      "contact_phone": "0783443960",
+      "description": "hospital ",
+      "verification_status": "pending",
+      "suspended": 0,
+      "is_verified": 0,
+      "latitude": null,
+      "longitude": null,
+      "address": null,
+      "location_verified": 0
+    }
+  ],
+  "jobs": [
+    {
+      "id": 11,
+      "hospital_id": 5,
+      "title": "cut",
+      "description": "support accident",
+      "specialty_required": "General Practice",
+      "location_type": "rural",
+      "salary_range": "",
+      "posted_date": "2026-05-16T19:50:32.000Z",
+      "status": "open",
+      "is_verified": 0,
+      "admin_approved": 0
+    },
+    {
+      "id": 12,
+      "hospital_id": 5,
+      "title": "treate",
+      "description": "treat people",
+      "specialty_required": "General Practice",
+      "location_type": "urban",
+      "salary_range": "$60k",
+      "posted_date": "2026-05-17T12:10:55.000Z",
+      "status": "open",
+      "is_verified": 0,
+      "admin_approved": 0
+    }
+  ],
+  "applications": [
+    {
+      "id": 9,
+      "job_id": 11,
+      "doctor_id": 4,
+      "status": "interview_scheduled",
+      "applied_date": "2026-05-16T23:44:23.000Z",
+      "updated_at": "2026-05-17T12:11:12.000Z",
+      "rejection_reason": null
+    },
+    {
+      "id": 10,
+      "job_id": 12,
+      "doctor_id": 4,
+      "status": "applied",
+      "applied_date": "2026-05-17T12:55:21.000Z",
+      "updated_at": "2026-05-17T12:55:21.000Z",
+      "rejection_reason": null
+    }
+  ],
+  "messages": [
+    {
+      "id": 52,
+      "sender_id": 11,
+      "receiver_id": 10,
+      "message": "hello doctor you can apply this job",
+      "is_read": 1,
+      "created_at": "2026-05-16T18:24:30.000Z"
+    },
+    {
+      "id": 53,
+      "sender_id": 10,
+      "receiver_id": 11,
+      "message": "give me answer faster",
+      "is_read": 1,
+      "created_at": "2026-05-16T18:35:44.000Z"
+    },
+    {
+      "id": 54,
+      "sender_id": 10,
+      "receiver_id": 11,
+      "message": "hy",
+      "is_read": 1,
+      "created_at": "2026-05-16T19:46:33.000Z"
+    },
+    {
+      "id": 55,
+      "sender_id": 10,
+      "receiver_id": 11,
+      "message": "hello",
+      "is_read": 1,
+      "created_at": "2026-05-16T23:46:39.000Z"
+    },
+    {
+      "id": 56,
+      "sender_id": 10,
+      "receiver_id": 11,
+      "message": "hy",
+      "is_read": 1,
+      "created_at": "2026-05-17T12:02:00.000Z"
+    },
+    {
+      "id": 57,
+      "sender_id": 11,
+      "receiver_id": 10,
+      "message": "hy doctor courage",
+      "is_read": 1,
+      "created_at": "2026-05-17T12:11:51.000Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": 89,
+      "user_id": 10,
+      "title": "New Job Match",
+      "message": "A new \"surgery\" position (rural) matching your profile has been posted.",
+      "is_read": 1,
+      "created_at": "2026-05-16T18:23:47.000Z"
+    },
+    {
+      "id": 90,
+      "user_id": 10,
+      "title": "hello",
+      "message": "hello every one",
+      "is_read": 1,
+      "created_at": "2026-05-16T19:10:53.000Z"
+    },
+    {
+      "id": 91,
+      "user_id": 10,
+      "title": "New Job Match",
+      "message": "A new \"cut\" position (rural) matching your profile has been posted.",
+      "is_read": 1,
+      "created_at": "2026-05-16T19:50:32.000Z"
+    },
+    {
+      "id": 92,
+      "user_id": 10,
+      "title": "New Job Match",
+      "message": "A new \"treate\" position (urban) matching your profile has been posted.",
+      "is_read": 1,
+      "created_at": "2026-05-17T12:10:55.000Z"
+    },
+    {
+      "id": 93,
+      "user_id": 10,
+      "title": "Application interview_scheduled",
+      "message": "An interview has been scheduled for you. For job: cut",
+      "is_read": 1,
+      "created_at": "2026-05-17T12:11:12.000Z"
+    },
+    {
+      "id": 94,
+      "user_id": 11,
+      "title": "New Application",
+      "message": "doctor applied for \"treate\".",
+      "is_read": 0,
+      "created_at": "2026-05-17T12:55:21.000Z"
+    },
+    {
+      "id": 95,
+      "user_id": 10,
+      "title": "greet",
+      "message": "helllo every one",
+      "is_read": 0,
+      "created_at": "2026-05-17T13:58:59.000Z"
+    },
+    {
+      "id": 96,
+      "user_id": 11,
+      "title": "greet",
+      "message": "helllo every one",
+      "is_read": 0,
+      "created_at": "2026-05-17T13:58:59.000Z"
+    }
+  ],
+  "user_settings": [
+    {
+      "user_id": 10,
+      "notifications_enabled": 1,
+      "email_notifications": 1,
+      "theme": "light"
+    },
+    {
+      "user_id": 11,
+      "notifications_enabled": 1,
+      "email_notifications": 1,
+      "theme": "light"
+    }
+  ],
+  "admin_notifications": [
+    {
+      "id": 3,
+      "admin_user_id": 1,
+      "hospital_id": 5,
+      "action_type": "post_job",
+      "details": "Posted new job: surgery",
+      "is_read": 0,
+      "created_at": "2026-05-16T18:23:47.000Z"
+    },
+    {
+      "id": 4,
+      "admin_user_id": 1,
+      "hospital_id": 5,
+      "action_type": "hired",
+      "details": "Updated application #8 to hired",
+      "is_read": 0,
+      "created_at": "2026-05-16T18:38:57.000Z"
+    },
+    {
+      "id": 5,
+      "admin_user_id": 1,
+      "hospital_id": 5,
+      "action_type": "interview_scheduled",
+      "details": "Updated application #8 to interview_scheduled",
+      "is_read": 0,
+      "created_at": "2026-05-16T18:39:06.000Z"
+    },
+    {
+      "id": 6,
+      "admin_user_id": 1,
+      "hospital_id": 5,
+      "action_type": "schedule_interview",
+      "details": "Scheduled interview for application #8 at 2025-01-15 10:00:00",
+      "is_read": 0,
+      "created_at": "2026-05-16T18:39:32.000Z"
+    },
+    {
+      "id": 7,
+      "admin_user_id": 1,
+      "hospital_id": 5,
+      "action_type": "hired",
+      "details": "Updated application #8 to hired",
+      "is_read": 0,
+      "created_at": "2026-05-16T19:49:18.000Z"
+    },
+    {
+      "id": 8,
+      "admin_user_id": 1,
+      "hospital_id": 5,
+      "action_type": "post_job",
+      "details": "Posted new job: cut",
+      "is_read": 0,
+      "created_at": "2026-05-16T19:50:32.000Z"
+    },
+    {
+      "id": 9,
+      "admin_user_id": 1,
+      "hospital_id": 5,
+      "action_type": "hired",
+      "details": "Updated application #9 to hired",
+      "is_read": 0,
+      "created_at": "2026-05-16T23:55:22.000Z"
+    },
+    {
+      "id": 10,
+      "admin_user_id": 1,
+      "hospital_id": 5,
+      "action_type": "post_job",
+      "details": "Posted new job: treate",
+      "is_read": 0,
+      "created_at": "2026-05-17T12:10:55.000Z"
+    },
+    {
+      "id": 11,
+      "admin_user_id": 1,
+      "hospital_id": 5,
+      "action_type": "schedule_interview",
+      "details": "Scheduled interview for application #9 at 2025-01-15 10:00:00",
+      "is_read": 0,
+      "created_at": "2026-05-17T12:11:25.000Z"
+    },
+    {
+      "id": 12,
+      "admin_user_id": 1,
+      "hospital_id": 5,
+      "action_type": "schedule_interview",
+      "details": "Scheduled interview for application #9 at 2025-01-15 10:00:00",
+      "is_read": 0,
+      "created_at": "2026-05-17T12:13:39.000Z"
+    }
+  ],
+  "system_logs": [
+    {
+      "id": 55,
+      "action": "broadcast",
+      "details": "Sent to doctors: hello",
+      "created_at": "2026-05-16T19:10:53.000Z"
+    },
+    {
+      "id": 56,
+      "action": "cleanup_jobs",
+      "details": "Deleted 0 old closed jobs",
+      "created_at": "2026-05-16T23:58:50.000Z"
+    },
+    {
+      "id": 57,
+      "action": "cleanup_jobs",
+      "details": "Deleted 0 old closed jobs",
+      "created_at": "2026-05-17T00:00:56.000Z"
+    },
+    {
+      "id": 58,
+      "action": "delete_job",
+      "details": "Deleted job ID 10",
+      "created_at": "2026-05-17T00:01:05.000Z"
+    },
+    {
+      "id": 59,
+      "action": "broadcast",
+      "details": "Sent to alls: greet",
+      "created_at": "2026-05-17T13:58:59.000Z"
+    },
+    {
+      "id": 60,
+      "action": "cleanup_jobs",
+      "details": "Deleted 0 old closed jobs",
+      "created_at": "2026-05-17T13:59:44.000Z"
+    },
+    {
+      "id": 61,
+      "action": "backup",
+      "details": "Created backup file backup_1779026386480.json",
+      "created_at": "2026-05-17T13:59:46.000Z"
+    },
+    {
+      "id": 62,
+      "action": "backup",
+      "details": "Created backup file backup_1779026389010.json",
+      "created_at": "2026-05-17T13:59:49.000Z"
+    },
+    {
+      "id": 63,
+      "action": "backup",
+      "details": "Created backup file backup_1779026389091.json",
+      "created_at": "2026-05-17T13:59:49.000Z"
+    },
+    {
+      "id": 64,
+      "action": "backup",
+      "details": "Created backup file backup_1779026389318.json",
+      "created_at": "2026-05-17T13:59:49.000Z"
+    },
+    {
+      "id": 65,
+      "action": "backup",
+      "details": "Created backup file backup_1779026392430.json",
+      "created_at": "2026-05-17T13:59:52.000Z"
+    },
+    {
+      "id": 66,
+      "action": "backup",
+      "details": "Created backup file backup_1779026393597.json",
+      "created_at": "2026-05-17T13:59:53.000Z"
+    },
+    {
+      "id": 67,
+      "action": "backup",
+      "details": "Created backup file backup_1779026393708.json",
+      "created_at": "2026-05-17T13:59:53.000Z"
+    },
+    {
+      "id": 68,
+      "action": "backup",
+      "details": "Created backup file backup_1779026396009.json",
+      "created_at": "2026-05-17T13:59:56.000Z"
+    },
+    {
+      "id": 69,
+      "action": "backup",
+      "details": "Created backup file backup_1779026398643.json",
+      "created_at": "2026-05-17T13:59:58.000Z"
+    }
+  ]
+}

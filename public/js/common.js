@@ -1,4 +1,4 @@
-// common.js - MedLink Africa
+// common.js - Medical Recruitment Platform
 const API_BASE = '/api';
 
 // ========== AUTHENTICATION ==========
@@ -55,7 +55,7 @@ async function loadUnreadCount() {
     } catch(e) {}
 }
 
-// ========== THEME & CUSTOM COLOR MANAGEMENT ==========
+// ========== THEME MANAGEMENT ==========
 function adjustColor(hex, percent) {
     let r = parseInt(hex.slice(1,3), 16);
     let g = parseInt(hex.slice(3,5), 16);
@@ -67,7 +67,7 @@ function adjustColor(hex, percent) {
 }
 
 function applyTheme(theme, customColor = null) {
-    document.body.className = theme; // 'light', 'dark', 'blue', 'green', or 'custom'
+    document.body.className = theme;
     if (theme === 'custom' && customColor) {
         document.body.style.setProperty('--primary-color', customColor);
         document.body.style.setProperty('--primary-hover', adjustColor(customColor, -20));
@@ -82,7 +82,21 @@ function applyTheme(theme, customColor = null) {
     if (customColor) localStorage.setItem('customColor', customColor);
 }
 
-// ========== I18N (INTERNATIONALIZATION) ==========
+async function initTheme() {
+    try {
+        const res = await fetch('/api/settings', { credentials: 'include' });
+        if (res.ok) {
+            const settings = await res.json();
+            applyTheme(settings.theme || 'light');
+        } else {
+            applyTheme('light');
+        }
+    } catch(e) {
+        applyTheme('light');
+    }
+}
+
+// ========== I18N ==========
 let currentLanguage = 'en';
 let translations = {};
 
@@ -118,7 +132,6 @@ function applyTranslations() {
     if (translations.app_name) document.title = translations.app_name;
 }
 
-// Load user's language from backend (for doctors/hospitals)
 async function initI18n() {
     try {
         const res = await fetch('/api/settings', { credentials: 'include' });
@@ -133,18 +146,17 @@ async function initI18n() {
     }
 }
 
-// Load user's theme from backend and apply
-async function initTheme() {
+async function loadAdminLanguage() {
     try {
-        const res = await fetch('/api/settings', { credentials: 'include' });
+        const res = await fetch('/api/admin/admin-settings', { credentials: 'include' });
         if (res.ok) {
             const settings = await res.json();
-            applyTheme(settings.theme || 'light');
+            await loadLanguage(settings.language || 'en');
         } else {
-            applyTheme('light');
+            await loadLanguage('en');
         }
     } catch(e) {
-        applyTheme('light');
+        await loadLanguage('en');
     }
 }
 
@@ -152,7 +164,8 @@ async function initTheme() {
 function injectNavbar(role) {
     const nav = document.getElementById('navbar');
     if (!nav) return;
-    let links = `<div class="container"><div class="logo"><h1 data-i18n="app_name">MedLink Africa</h1></div><div class="nav-links">`;
+    
+    let links = `<div class="container"><div class="logo"><h1 data-i18n="app_name">Medical Recruitment</h1></div><div class="nav-links">`;
     
     if (role === 'doctor') {
         links += `<a href="/doctor/dashboard.html" data-i18n="dashboard">Dashboard</a>
@@ -162,37 +175,95 @@ function injectNavbar(role) {
                   <a href="/notifications.html" data-i18n="notifications">Notifications</a>
                   <a href="/settings.html" data-i18n="settings">Settings</a>
                   <a href="#" onclick="logout()" data-i18n="logout">Logout</a>`;
-    } else if (role === 'hospital') {
+    } 
+    else if (role === 'hospital') {
         links += `<a href="/hospital/dashboard.html" data-i18n="dashboard">Dashboard</a>
                   <a href="/hospital/jobs.html" data-i18n="my_jobs">My Jobs</a>
                   <a href="/hospital/post-job.html" data-i18n="post_job">Post Job</a>
                   <a href="/hospital/applicants.html" data-i18n="applicants">Applicants</a>
-                  <a href="/hospital/search-doctors.html" data-i18n="search_doctors">Search Doctors</a>
-                  <a href="/messages.html" data-i18n="messages">Messages</a>
-                  <a href="/notifications.html" data-i18n="notifications">Notifications</a>
-                  <a href="/settings.html" data-i18n="settings">Settings</a>
-                  <a href="#" onclick="logout()" data-i18n="logout">Logout</a>`;
-    } else if (role === 'admin') {
+                  <div class="dropdown">
+                      <button class="dropbtn" data-i18n="more">More ▼</button>
+                      <div class="dropdown-content">
+                          <a href="/hospital/search-doctors.html" data-i18n="search_doctors">Search Doctors</a>
+                          <a href="/messages.html" data-i18n="messages">Messages</a>
+                          <a href="/hospital/profile.html" data-i18n="profile">Profile</a>
+                          <a href="/settings.html" data-i18n="settings">Settings</a>
+                          <a href="#" onclick="logout()" data-i18n="logout">Logout</a>
+                      </div>
+                  </div>`;
+    } 
+    else if (role === 'admin') {
+        // Admin navbar WITHOUT Map
         links += `<a href="/admin/dashboard.html" data-i18n="dashboard">Dashboard</a>
                   <a href="/admin/users.html" data-i18n="users">Users</a>
                   <a href="/admin/content.html" data-i18n="content">Content</a>
                   <a href="/admin/jobs.html" data-i18n="jobs">Jobs</a>
-                  <a href="/admin/map.html" data-i18n="map">Map</a>
                   <a href="/admin/stats.html" data-i18n="stats">Stats</a>
                   <a href="/admin/support.html" data-i18n="support">Support</a>
                   <a href="/admin/system.html" data-i18n="system">System</a>
                   <a href="#" onclick="logout()" data-i18n="logout">Logout</a>`;
-    } else {
+    } 
+    else {
         links += `<a href="/" data-i18n="home">Home</a>
                   <a href="/login.html" data-i18n="login">Login</a>
                   <a href="/register.html" data-i18n="register">Register</a>`;
     }
+    
     links += `</div></div>`;
     nav.innerHTML = links;
     applyTranslations();
+    
+    // Add dropdown CSS for hospital only
+    if (role === 'hospital' && !document.getElementById('dropdown-styles')) {
+        const style = document.createElement('style');
+        style.id = 'dropdown-styles';
+        style.textContent = `
+            .dropdown {
+                position: relative;
+                display: inline-block;
+            }
+            .dropbtn {
+                background: transparent;
+                color: white;
+                padding: 8px 16px;
+                font-size: 16px;
+                border: none;
+                cursor: pointer;
+                font-family: inherit;
+            }
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                background-color: #2c3e50;
+                min-width: 160px;
+                box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                z-index: 1;
+                border-radius: 5px;
+                overflow: hidden;
+            }
+            .dropdown-content a {
+                color: white;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+                text-align: left;
+            }
+            .dropdown-content a:hover {
+                background-color: #34495e;
+            }
+            .dropdown:hover .dropdown-content {
+                display: block;
+            }
+            .dropdown:hover .dropbtn {
+                background-color: #34495e;
+                border-radius: 5px;
+            }
+        `;
+        document.head.appendChild(style);
+    }
 }
 
-// ========== DOCTOR / HOSPITAL PAGE INIT (GLOBAL) ==========
+// ========== DOCTOR / HOSPITAL PAGE INIT ==========
 async function initUserPanel(requiredRole) {
     const user = await checkAuth();
     if (!user || user.role !== requiredRole) {
@@ -200,8 +271,8 @@ async function initUserPanel(requiredRole) {
         return;
     }
     injectNavbar(requiredRole);
-    await initI18n();      // loads language from backend
-    await initTheme();     // loads theme from backend
+    await initI18n();
+    await initTheme();
     loadUnreadCount();
     setInterval(loadUnreadCount, 30000);
 }
@@ -214,7 +285,6 @@ async function initAdminPanel() {
         return;
     }
     injectNavbar('admin');
-    // Admin uses separate settings endpoint
     try {
         const res = await fetch('/api/admin/admin-settings', { credentials: 'include' });
         if (res.ok) {

@@ -3,7 +3,7 @@ const db = require('../db');
 const { requireAuth } = require('../middleware/auth');
 const router = express.Router();
 
-// Get conversations for the logged-in user (doctor, hospital, admin)
+// Get conversations for logged-in user
 router.get('/conversations', requireAuth, async (req, res) => {
     const userId = req.session.userId;
     try {
@@ -46,9 +46,20 @@ router.get('/:userId', requireAuth, async (req, res) => {
             WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
             ORDER BY created_at ASC
         `, [userId, otherUserId, otherUserId, userId]);
-        // Mark as read
         await db.query('UPDATE messages SET is_read = TRUE WHERE receiver_id = ? AND sender_id = ?', [userId, otherUserId]);
         res.json(messages);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get user by email (for contact admin with email)
+router.get('/user-by-email/:email', requireAuth, async (req, res) => {
+    try {
+        const [user] = await db.query('SELECT id, role, email FROM users WHERE email = ?', [req.params.email]);
+        if (!user.length) return res.status(404).json({ error: 'User not found' });
+        res.json({ id: user[0].id, role: user[0].role, email: user[0].email });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });
@@ -58,15 +69,19 @@ router.get('/:userId', requireAuth, async (req, res) => {
 // Send a message
 router.post('/', requireAuth, async (req, res) => {
     const { receiver_id, message } = req.body;
-    if (!receiver_id || !message) return res.status(400).json({ error: 'Missing fields' });
+    if (!receiver_id || !message) {
+        return res.status(400).json({ error: 'Missing receiver_id or message' });
+    }
     try {
-        // Verify receiver exists
         const [receiver] = await db.query('SELECT id FROM users WHERE id = ?', [receiver_id]);
-        if (!receiver.length) return res.status(404).json({ error: 'Receiver not found' });
+        if (!receiver.length) {
+            return res.status(404).json({ error: 'Receiver not found' });
+        }
         const [result] = await db.query(
             'INSERT INTO messages (sender_id, receiver_id, message) VALUES (?, ?, ?)',
             [req.session.userId, receiver_id, message]
         );
+        console.log(`Message sent: ${req.session.userId} -> ${receiver_id}`);
         res.status(201).json({ id: result.insertId });
     } catch (err) {
         console.error(err);
@@ -74,20 +89,23 @@ router.post('/', requireAuth, async (req, res) => {
     }
 });
 
-// Delete a message (only if sender is current user)
+// Delete a message
 router.delete('/:messageId', requireAuth, async (req, res) => {
     try {
         const [msg] = await db.query('SELECT sender_id FROM messages WHERE id = ?', [req.params.messageId]);
         if (!msg.length) return res.status(404).json({ error: 'Message not found' });
-        if (msg[0].sender_id !== req.session.userId) return res.status(403).json({ error: 'Not your message' });
+        if (msg[0].sender_id !== req.session.userId) {
+            return res.status(403).json({ error: 'You can only delete your own messages' });
+        }
         await db.query('DELETE FROM messages WHERE id = ?', [req.params.messageId]);
-        res.json({ message: 'Message deleted' });
+        res.json({ message: 'Message deleted successfully' });
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: err.message });
     }
 });
 
-// Get user name by ID (for starting a new conversation)
+// Get user name by ID
 router.get('/user/:userId/name', requireAuth, async (req, res) => {
     try {
         const [user] = await db.query(`
@@ -105,6 +123,7 @@ router.get('/user/:userId/name', requireAuth, async (req, res) => {
         if (!user.length) return res.status(404).json({ error: 'User not found' });
         res.json({ name: user[0].name });
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: err.message });
     }
 });

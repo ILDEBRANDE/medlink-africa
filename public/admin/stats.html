@@ -2,42 +2,228 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title data-i18n="statistics">Statistics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="statistics">Statistics - Medical Recruitment</title>
     <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        .stats-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .stats-header {
+            background: var(--card-bg, white);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: var(--card-bg, white);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+        .stat-card h3 {
+            font-size: 2rem;
+            color: var(--primary-color, #3498db);
+            margin-bottom: 10px;
+        }
+        .report-btn {
+            background: var(--primary-color, #3498db);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .report-btn:hover {
+            background: var(--primary-hover, #2980b9);
+        }
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar" id="navbar"></nav>
-    <div class="container">
-        <h2 data-i18n="statistics">Statistics</h2>
-        <div id="basicStats" class="stats-grid"></div>
-        <div id="matchingStats" class="stats-grid"></div>
-        <button id="reportBtn" data-i18n="download_report">Download Report</button>
+
+    <div class="stats-container">
+        <div class="stats-header">
+            <h2 data-i18n="statistics">📊 System Statistics</h2>
+            <p data-i18n="stats_description">Overview of platform activity</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid" id="basicStats">
+            <div class="stat-card">
+                <h3 id="doctorsCount">0</h3>
+                <p data-i18n="total_doctors">Total Doctors</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="hospitalsCount">0</h3>
+                <p data-i18n="total_hospitals">Total Hospitals</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="jobsCount">0</h3>
+                <p data-i18n="total_jobs">Total Jobs Posted</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="applicationsCount">0</h3>
+                <p data-i18n="total_applications">Total Applications</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="ruralJobsCount">0</h3>
+                <p data-i18n="rural_jobs">Rural Jobs</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="urbanJobsCount">0</h3>
+                <p data-i18n="urban_jobs">Urban Jobs</p>
+            </div>
+        </div>
+
+        <!-- Export PDF Report -->
+        <div style="text-align: center;">
+            <button id="exportPdfBtn" class="report-btn" data-i18n="export_pdf">📄 Download PDF Report</button>
+        </div>
     </div>
+
     <script src="/js/common.js"></script>
     <script>
-        async function loadStats() {
-            const res = await fetch('/api/admin/stats', { credentials: 'include' });
-            const stats = await res.json();
-            document.getElementById('basicStats').innerHTML = `
-                <div class="stat-card"><h3>${stats.doctors}</h3><p data-i18n="doctors">Doctors</p></div>
-                <div class="stat-card"><h3>${stats.hospitals}</h3><p data-i18n="hospitals">Hospitals</p></div>
-                <div class="stat-card"><h3>${stats.jobs}</h3><p data-i18n="jobs">Jobs</p></div>
-                <div class="stat-card"><h3>${stats.applications}</h3><p data-i18n="applications">Applications</p></div>
-                <div class="stat-card"><h3>${stats.ruralJobs}</h3><p data-i18n="rural_jobs">Rural Jobs</p></div>
-                <div class="stat-card"><h3>${stats.urbanJobs}</h3><p data-i18n="urban_jobs">Urban Jobs</p></div>
-            `;
-            const matchRes = await fetch('/api/admin/matching-stats', { credentials: 'include' });
-            const match = await matchRes.json();
-            document.getElementById('matchingStats').innerHTML = `<div class="stat-card"><h3>${match.average_match_score}%</h3><p data-i18n="avg_match_score">Avg Match Score</p></div><div class="stat-card"><h3>${match.total_jobs}</h3><p data-i18n="total_jobs">Total Open Jobs</p></div><div class="stat-card"><h3>${match.total_doctors}</h3><p data-i18n="total_doctors">Total Doctors</p></div>`;
-            applyTranslations();
+        let statsData = {};
+
+        async function loadStatistics() {
+            try {
+                const statsRes = await fetch('/api/admin/stats', { credentials: 'include' });
+                if (!statsRes.ok) throw new Error('Failed to load stats');
+                statsData = await statsRes.json();
+                
+                document.getElementById('doctorsCount').textContent = statsData.doctors || 0;
+                document.getElementById('hospitalsCount').textContent = statsData.hospitals || 0;
+                document.getElementById('jobsCount').textContent = statsData.jobs || 0;
+                document.getElementById('applicationsCount').textContent = statsData.applications || 0;
+                document.getElementById('ruralJobsCount').textContent = statsData.ruralJobs || 0;
+                document.getElementById('urbanJobsCount').textContent = statsData.urbanJobs || 0;
+            } catch (err) {
+                console.error('Stats error:', err);
+            }
         }
-        document.getElementById('reportBtn').addEventListener('click', async () => {
-            const stats = await (await fetch('/api/admin/stats', { credentials: 'include' })).json();
-            const match = await (await fetch('/api/admin/matching-stats', { credentials: 'include' })).json();
-            const blob = new Blob([JSON.stringify({ stats, match }, null, 2)], {type:'application/json'});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'medlink_report.json'; a.click(); URL.revokeObjectURL(blob);
-        });
-        (async () => { await initAdminPanel(); await loadStats(); })();
+
+        async function exportToPDF() {
+            try {
+                const currentDate = new Date().toLocaleString();
+                
+                const pdfContent = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Medical Recruitment Statistics Report</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 40px; }
+                            h1 { color: #2c3e50; text-align: center; }
+                            .header { text-align: center; margin-bottom: 30px; }
+                            .date { color: #7f8c8d; font-size: 12px; margin-bottom: 20px; }
+                            .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 20px; }
+                            .stat-card { background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center; }
+                            .stat-card h2 { font-size: 2rem; color: #3498db; margin: 0; }
+                            .stat-card p { color: #666; margin: 10px 0 0; }
+                            hr { margin: 30px 0; }
+                            .footer { text-align: center; margin-top: 30px; font-size: 10px; color: #7f8c8d; }
+                            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                            th, td { padding: 8px; border-bottom: 1px solid #ddd; text-align: left; }
+                            th { background: #3498db; color: white; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>Medical Recruitment Platform</h1>
+                            <h2>System Statistics Report</h2>
+                            <div class="date">Generated: ${currentDate}</div>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <h2>${statsData.doctors || 0}</h2>
+                                <p>Total Doctors</p>
+                            </div>
+                            <div class="stat-card">
+                                <h2>${statsData.hospitals || 0}</h2>
+                                <p>Total Hospitals</p>
+                            </div>
+                            <div class="stat-card">
+                                <h2>${statsData.jobs || 0}</h2>
+                                <p>Total Jobs Posted</p>
+                            </div>
+                            <div class="stat-card">
+                                <h2>${statsData.applications || 0}</h2>
+                                <p>Total Applications</p>
+                            </div>
+                            <div class="stat-card">
+                                <h2>${statsData.ruralJobs || 0}</h2>
+                                <p>Rural Jobs</p>
+                            </div>
+                            <div class="stat-card">
+                                <h2>${statsData.urbanJobs || 0}</h2>
+                                <p>Urban Jobs</p>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <h3>Additional Information</h3>
+                        <table>
+                            <tr><th>Metric</th><th>Value</th></tr>
+                            <tr><td>Doctors per Hospital (Avg)</td><td>${(statsData.doctors / (statsData.hospitals || 1)).toFixed(1)}</td></tr>
+                            <tr><td>Applications per Job (Avg)</td><td>${(statsData.applications / (statsData.jobs || 1)).toFixed(1)}</td></tr>
+                            <tr><td>Rural Jobs Percentage</td><td>${((statsData.ruralJobs / (statsData.jobs || 1)) * 100).toFixed(1)}%</td></tr>
+                        </table>
+                        
+                        <div class="footer">
+                            <p>Medical Recruitment Platform &copy; ${new Date().getFullYear()}</p>
+                            <p>This report was generated automatically by the system.</p>
+                        </div>
+                    </body>
+                    </html>
+                `;
+                
+                const element = document.createElement('div');
+                element.innerHTML = pdfContent;
+                const opt = {
+                    margin: [0.5, 0.5, 0.5, 0.5],
+                    filename: `statistics_report_${new Date().toISOString().slice(0,19)}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+                };
+                html2pdf().set(opt).from(element).save();
+            } catch (err) {
+                console.error('PDF export error:', err);
+                alert('Failed to generate PDF report');
+            }
+        }
+
+        (async () => {
+            await initAdminPanel();
+            await loadStatistics();
+            document.getElementById('exportPdfBtn')?.addEventListener('click', exportToPDF);
+        })();
     </script>
 </body>
 </html>

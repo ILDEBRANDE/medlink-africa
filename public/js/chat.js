@@ -1,4 +1,4 @@
-// chat.js – works for admin, doctor, hospital (supports starting new chats)
+// chat.js - Messaging logic for all users (doctor, hospital, admin)
 
 let currentChatUserId = null;
 let currentUserId = null;
@@ -7,13 +7,13 @@ let currentUserName = '';
 async function loadConversations() {
     try {
         const res = await fetch('/api/messages/conversations', { credentials: 'include' });
-        if (!res.ok) throw new Error('Failed to load');
+        if (!res.ok) throw new Error('Failed to load conversations');
         const convs = await res.json();
         const list = document.getElementById('conversationList');
         list.innerHTML = '';
+        
         if (convs.length === 0) {
-            list.innerHTML = '<div class="loading" data-i18n="no_conversations">No conversations yet. Click "Contact" to start.</div>';
-            applyTranslations();
+            list.innerHTML = '<div class="loading">No conversations yet. Click "Contact" to start.</div>';
         } else {
             convs.forEach(c => {
                 const div = document.createElement('div');
@@ -25,15 +25,16 @@ async function loadConversations() {
             });
         }
 
-        // Handle ?userId= from URL (coming from admin panel or contact buttons)
+        // Handle ?userId= from URL (coming from contact buttons)
         const urlParams = new URLSearchParams(window.location.search);
         const userId = urlParams.get('userId');
+        
         if (userId) {
             const existing = convs.find(c => c.other_user_id == userId);
             if (existing) {
                 await loadChat(existing.other_user_id, existing.other_name);
             } else {
-                // No prior conversation: fetch the user's name and load a new chat
+                // Try to get user name
                 try {
                     const nameRes = await fetch(`/api/messages/user/${userId}/name`, { credentials: 'include' });
                     if (nameRes.ok) {
@@ -48,7 +49,7 @@ async function loadConversations() {
             }
         }
     } catch (err) {
-        console.error(err);
+        console.error('Load conversations error:', err);
         document.getElementById('conversationList').innerHTML = '<div class="error">Error loading conversations.</div>';
     }
 }
@@ -57,46 +58,68 @@ async function loadChat(userId, userName) {
     if (!userId) return;
     currentChatUserId = userId;
     currentUserName = userName;
-    document.getElementById('chatHeader').innerText = `Chat with ${escapeHtml(userName)}`;
-    document.getElementById('messagesContainer').innerHTML = '<div class="loading">Loading messages...</div>';
-    // ENABLE INPUT IMMEDIATELY (so user can type even before messages load)
-    document.getElementById('messageInput').disabled = false;
-    document.getElementById('sendBtn').disabled = false;
-    document.getElementById('messageInput').focus();
+    
+    const chatHeader = document.getElementById('chatHeader');
+    const messagesContainer = document.getElementById('messagesContainer');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    
+    if (chatHeader) chatHeader.innerText = `Chat with ${escapeHtml(userName)}`;
+    if (messagesContainer) messagesContainer.innerHTML = '<div class="loading">Loading messages...</div>';
+    
+    // ENABLE INPUT IMMEDIATELY
+    if (messageInput) {
+        messageInput.disabled = false;
+        messageInput.value = '';
+        messageInput.focus();
+    }
+    if (sendBtn) sendBtn.disabled = false;
+    
     try {
         const res = await fetch(`/api/messages/${userId}`, { credentials: 'include' });
-        if (!res.ok) throw new Error('Failed to load');
+        if (!res.ok) throw new Error('Failed to load messages');
         const messages = await res.json();
-        const container = document.getElementById('messagesContainer');
-        container.innerHTML = '';
-        if (messages.length === 0) {
-            container.innerHTML = '<div class="loading">No messages yet. Send a message!</div>';
-        } else {
-            messages.forEach(m => {
-                const div = document.createElement('div');
-                div.className = `message ${m.sender_id === currentUserId ? 'sent' : 'received'}`;
-                div.innerHTML = `${escapeHtml(m.message)} ${m.sender_id === currentUserId ? `<button class="delete-msg" onclick="deleteMessage(${m.id})">✖</button>` : ''}`;
-                container.appendChild(div);
-            });
-            container.scrollTop = container.scrollHeight;
+        
+        if (messagesContainer) {
+            messagesContainer.innerHTML = '';
+            
+            if (messages.length === 0) {
+                messagesContainer.innerHTML = '<div class="loading">No messages yet. Send a message!</div>';
+            } else {
+                messages.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = `message ${m.sender_id === currentUserId ? 'sent' : 'received'}`;
+                    div.innerHTML = `${escapeHtml(m.message)} ${m.sender_id === currentUserId ? `<button class="delete-msg" onclick="deleteMessage(${m.id})">✖</button>` : ''}`;
+                    messagesContainer.appendChild(div);
+                });
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
         }
-        // Highlight active conversation in list (if it exists)
+        
+        // Highlight active conversation
         document.querySelectorAll('.conversation-item').forEach(item => {
             item.classList.remove('active');
             if (item.innerText.includes(userName.substring(0,20))) item.classList.add('active');
         });
     } catch (err) {
-        console.error(err);
-        document.getElementById('messagesContainer').innerHTML = '<div class="error">Failed to load messages.</div>';
-        // Keep input enabled even on error
+        console.error('Load chat error:', err);
+        if (messagesContainer) messagesContainer.innerHTML = '<div class="error">Failed to load messages.</div>';
     }
 }
 
 async function sendMessage() {
-    const msg = document.getElementById('messageInput').value.trim();
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    
+    if (!messageInput || !sendBtn) return;
+    
+    const msg = messageInput.value.trim();
     if (!msg || !currentChatUserId) return;
-    document.getElementById('sendBtn').disabled = true;
-    document.getElementById('sendBtn').innerText = 'Sending...';
+    
+    sendBtn.disabled = true;
+    const originalText = sendBtn.innerText;
+    sendBtn.innerText = 'Sending...';
+    
     try {
         const res = await fetch('/api/messages', {
             method: 'POST',
@@ -104,18 +127,21 @@ async function sendMessage() {
             credentials: 'include',
             body: JSON.stringify({ receiver_id: currentChatUserId, message: msg })
         });
+        
         if (res.ok) {
-            document.getElementById('messageInput').value = '';
+            messageInput.value = '';
             await loadChat(currentChatUserId, currentUserName);
         } else {
             const err = await res.json();
             alert(err.error || 'Failed to send');
         }
     } catch (err) {
+        console.error('Send message error:', err);
         alert('Network error');
     } finally {
-        document.getElementById('sendBtn').disabled = false;
-        document.getElementById('sendBtn').innerText = 'Send';
+        sendBtn.disabled = false;
+        sendBtn.innerText = originalText;
+        if (messageInput) messageInput.focus();
     }
 }
 
@@ -133,29 +159,55 @@ async function deleteMessage(messageId) {
     }
 }
 
-// Event listeners
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+// Set up event listeners
 document.addEventListener('DOMContentLoaded', () => {
     const sendBtn = document.getElementById('sendBtn');
     const messageInput = document.getElementById('messageInput');
-    if (sendBtn) sendBtn.addEventListener('click', sendMessage);
-    if (messageInput) messageInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && sendBtn && !sendBtn.disabled) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
+    
+    if (sendBtn) {
+        sendBtn.addEventListener('click', sendMessage);
+    }
+    if (messageInput) {
+        messageInput.addEventListener('keypress', (e) => {
+            const btn = document.getElementById('sendBtn');
+            if (e.key === 'Enter' && btn && !btn.disabled) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    }
 });
 
-// Initialize the page (called from messages.html or here)
+// Initialize the messages page
 (async () => {
-    const user = await checkAuth();
-    if (!user) {
-        window.location.href = '/login.html';
-        return;
+    try {
+        const user = await checkAuth();
+        if (!user) {
+            window.location.href = '/login.html';
+            return;
+        }
+        currentUserId = user.id;
+        
+        if (typeof injectNavbar === 'function') injectNavbar(user.role);
+        if (typeof initI18n === 'function') await initI18n();
+        if (typeof initTheme === 'function') await initTheme();
+        
+        await loadConversations();
+    } catch (err) {
+        console.error('Chat initialization error:', err);
+        const container = document.getElementById('conversationList');
+        if (container) {
+            container.innerHTML = '<div class="error">Failed to initialize chat. Please refresh.</div>';
+        }
     }
-    currentUserId = user.id;
-    injectNavbar(user.role);
-    await initI18n();
-    await initTheme();
-    await loadConversations();
 })();

@@ -1,5 +1,5 @@
 {
-  "app_name": "MedLink Afrika",
+  "app_name": "Medical recruitment",
   "home": "Ahabanza",
   "login": "Injira",
   "register": "Iyandikishe",
@@ -17,6 +17,24 @@
   "applications_submitted": "Uburezi Bwatumwe",
   "interviews_scheduled": "Ibiganiro Byateguwe",
   "profile_complete": "Ibyerekeye wawe Byuzuye",
+  "upload_photo": "ohereza ifoto",
+  "view_interview_details": "Reba Ibijyanye n'Ikiganiro",
+  "your_application_status": "Ibyerekeye Gusaba Kwawe",
+  "rejection_reason": "Impamvu yo Kunyeganyega",
+
+  "view_interview_details": "Reba Ibijyanye n'Ikiganiro",
+
+  "your_application_status": "Ibyerekeye Gusaba Kwawe",
+  "rejection_reason": "Impamvu yo Kunyeganyega",
+
+  "view_all_applicants": "Reba Abasaba Bose",
+  "no_applicants": "Nta wasabye",
+
+  "other_applicants": "Abandi Basabye",
+  "view_other_applicants": "Reba Abandi Basabye",
+  "no_other_applicants": "Nta bandi basabye",
+  "message": "Ubutumwa",
+
   "recent_applications": "Uburezi Buhari",
   "job_title": "Izina ry'Akazi",
   "hospital": "Ibitaro",

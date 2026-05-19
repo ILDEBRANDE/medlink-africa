@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - MedLink Africa</title>
+    <title>Register - Medical Recruitment</title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
         .role-selector {
@@ -43,7 +43,9 @@
 <body>
     <nav class="navbar">
         <div class="container">
-            <div class="logo"><h1>MedLink Africa</h1></div>
+            <div class="logo">
+                <h1>Medical Recruitment</h1>
+            </div>
             <div class="nav-links">
                 <a href="/">Home</a>
                 <a href="/login.html">Login</a>
@@ -80,9 +82,9 @@
                         <option value="General Practice">General Practice</option>
                         <option value="Cardiology">Cardiology/heart treatment</option>
                         <option value="Pediatrics">Pediatrics/child treatment</option>
-                        <option value="Surgery">Surgery/girl treatment</option>
-                        <option value="Obstetrics">Obstetrics/child birth</option>
-                        <option value="Radiology">Radiology/ take photo of inside body</option>
+                        <option value="Surgery">Surgery/ girl treatmen</option>
+                        <option value="Obstetrics">Obstetrics /child birth</option>
+                        <option value="Radiology">Radiology/ treate inside body</option>
                         <option value="Emergency Medicine">Emergency Medicine/ accident treatment</option>
                     </select>
                 </div>
@@ -140,7 +142,7 @@
 
     <script src="/js/common.js"></script>
     <script>
-        // Role selection handling
+        // Role selection
         const roleBtns = document.querySelectorAll('.role-btn');
         const doctorForm = document.getElementById('doctorRegisterForm');
         const hospitalForm = document.getElementById('hospitalRegisterForm');
@@ -160,7 +162,7 @@
             });
         });
 
-        // Default: select doctor
+        // Default select doctor
         document.querySelector('.role-btn.doctor').click();
 
         // Doctor registration
@@ -203,7 +205,7 @@
                 });
                 const data = await response.json();
                 if (response.ok) {
-                    alert('Registration successful! try login.');
+                    alert('Registration successful! Please login.');
                     window.location.href = '/login.html';
                 } else {
                     alert(data.error || 'Registration failed');
